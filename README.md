@@ -4,7 +4,7 @@
 Linear Regression
 
 ## Part 2.
-Overfitting: Polynomial Regression (30%)
+Overfitting: Polynomial Regression
 
 ## Part 3. 
 Implementation of Myo Armband Keyboard using Tensorflow
