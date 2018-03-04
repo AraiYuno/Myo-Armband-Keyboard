@@ -4,9 +4,6 @@ from collections import defaultdict
 
 # Global Variables
 
-
-
-
 #==================================================================================
 # separateSets
 #   This function separate each of backward, forward, left, right and enter buttons'
@@ -20,7 +17,6 @@ def separateSets(orientation_path, accelero_path):
     ori_timestamp_list = find_nochange_periods(orientation_list['timestamp'], orientation_list['x'],
                                                orientation_list['y'], orientation_list['z'])
     peak_value = find_peak(accelero_list['y'])
-    print(peak_value)
     intervals = make_intervals(peak_value, ori_timestamp_list, accelero_list)
     return intervals
 
@@ -81,6 +77,7 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
         while start_index < end_index:
             if accelero_y[start_index] < peak_value:
                 to_return.append(Interval(timestamp_list[i-1], timestamp_list[i]))
+                print(timestamp_list[i-1] + ", " + timestamp_list[i])
                 break
             start_index = start_index+1
         i = i+1
