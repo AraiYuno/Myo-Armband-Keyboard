@@ -16,7 +16,9 @@ def separateSets(orientation_path, accelero_path):
     ori_timestamp_list = find_nochange_periods(orientation_list['timestamp'], orientation_list['x'],
                                                orientation_list['y'], orientation_list['z'])
     peak_value = find_peak(accelero_list['y'])
+    print(peak_value)
     intervals = make_intervals(peak_value, ori_timestamp_list, accelero_list)
+    intervals = refineSets(intervals)
     return intervals
 
 
@@ -83,6 +85,22 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
     return to_return
 
 
+#==================================================================================
+# refineSets
+#   takes in intervals list as a parameter and make them all to 10 intervals
+#==================================================================================
+def refineSets( intervals ):
+    while len(intervals) != 10:
+        if len(intervals) > 10:
+            intervals.pop(0)
+        if len(intervals) < 10:
+            intervals.append(intervals[len(intervals)-1])
+    return intervals
+
+
+
+
+
 
 #==================================================================================
 # extract_emg
@@ -137,11 +155,16 @@ def find_closest_timestamp_interval_list(intervals, list):
 # MAIN EXECUTION
 backward_invervals = separateSets('./data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv')
 emg_column1 = extract_emg(backward_invervals, './data/Backward/emg-1456704054.csv', 'emg1')
-print("Printing EMG1 data. 10 intervals' actual data")
-print(emg_column1)
+#print("Printing EMG1 data. 10 intervals' actual data")
+#print("Backward: ", len(backward_invervals))
 
 
-forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv')
-right_intervals = separateSets('./data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv')
-left_intervals = separateSets('./data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv')
-enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
+#forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv')
+#print("Forward: ", len(forward_intervals))
+#print(forward_intervals[0].end_time)
+#right_intervals = separateSets('./data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv')
+#print("Right: ", len(right_intervals))
+#left_intervals = separateSets('./data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv')
+#print("left: ", len(left_intervals))
+#enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
+#print("enter: ", len(enter_intervals))
