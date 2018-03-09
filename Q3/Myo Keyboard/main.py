@@ -75,7 +75,7 @@ def create_feature_sets_and_labels(test_size=0.1):
             './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
 
     # shuffle out features and turn into np.array
-    random.shuffle(features)
+    #random.shuffle(features)
     features = np.array(features)
     # split a portion of the features into tests
     testing_size = int(test_size * len(features))
@@ -98,7 +98,7 @@ n_nodes_hl2 = 8
 # classes in our output
 n_classes = 5
 # iterations and batch-size to build out model
-hm_epochs = 200
+hm_epochs = 50
 batch_size = 4
 
 

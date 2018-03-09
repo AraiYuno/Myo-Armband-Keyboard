@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/dataReader.py" line="258" mnemonic="3" />
+    <bookmark url="file://$PROJECT_DIR$/dataReader.py" line="259" mnemonic="3" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8777ae73-7ab1-4333-9065-115f5c653a6f" name="Default" comment="" />
@@ -14,11 +14,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="dataReader.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="dataReader.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dataReader.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1023">
-              <caret line="254" column="20" lean-forward="true" selection-start-line="254" selection-start-column="20" selection-end-line="254" selection-end-column="20" />
+            <state relative-caret-position="264">
+              <caret line="210" column="31" lean-forward="true" selection-start-line="210" selection-start-column="31" selection-end-line="210" selection-end-column="31" />
               <folding>
                 <element signature="e#730#740#0" expanded="true" />
               </folding>
@@ -26,11 +26,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="149">
-              <caret line="185" column="38" lean-forward="false" selection-start-line="185" selection-start-column="38" selection-end-line="185" selection-end-column="38" />
+            <state relative-caret-position="232">
+              <caret line="79" column="48" lean-forward="true" selection-start-line="79" selection-start-column="48" selection-end-line="79" selection-end-column="48" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -41,7 +41,7 @@
       <file leaf-file-name="numeric.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/numpy/core/numeric.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
+            <state relative-caret-position="13659">
               <caret line="491" column="0" lean-forward="false" selection-start-line="491" selection-start-column="0" selection-end-line="491" selection-end-column="0" />
               <folding />
             </state>
@@ -51,7 +51,7 @@
       <file leaf-file-name="session.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/tensorflow/python/client/session.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="161">
+            <state relative-caret-position="25607">
               <caret line="904" column="0" lean-forward="false" selection-start-line="904" selection-start-column="0" selection-end-line="904" selection-end-column="0" />
               <folding />
             </state>
@@ -61,8 +61,8 @@
       <file leaf-file-name="Interval.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Interval.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="7" column="59" lean-forward="false" selection-start-line="7" selection-start-column="59" selection-end-line="7" selection-end-column="59" />
+            <state relative-caret-position="146">
+              <caret line="11" column="18" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="18" />
               <folding />
             </state>
           </provider>
@@ -84,10 +84,14 @@
       <find>to_return</find>
       <find>]</find>
       <find>,</find>
-      <find>COME</find>
       <find>refine</find>
-      <find>print</find>
       <find>[</find>
+      <find>print</find>
+      <find>epoc</find>
+      <find>start:</find>
+      <find>===============</find>
+      <find>COME</find>
+      <find>START</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -95,8 +99,8 @@
       <list>
         <option value="$PROJECT_DIR$/multilayer_perceptron.py" />
         <option value="$PROJECT_DIR$/Interval.py" />
-        <option value="$PROJECT_DIR$/dataReader.py" />
         <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/dataReader.py" />
       </list>
     </option>
   </component>
@@ -121,7 +125,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -129,14 +132,11 @@
               <item name="Myo Keyboard" type="b2602c69:ProjectViewProjectNode" />
               <item name="Myo Keyboard" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="Myo Keyboard" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -252,14 +252,14 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1703125" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23867403" sideWeight="0.09375" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23867403" sideWeight="0.90625" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4" sideWeight="0.10104167" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32928178" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4" sideWeight="0.8989583" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.49791667" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.49583334" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -279,6 +279,50 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/dataReader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7279">
+          <caret line="254" column="20" lean-forward="false" selection-start-line="254" selection-start-column="20" selection-end-line="254" selection-end-column="20" />
+          <folding>
+            <element signature="e#730#740#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5249">
+          <caret line="184" column="38" lean-forward="false" selection-start-line="184" selection-start-column="38" selection-end-line="184" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/numpy/core/numeric.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14239">
+          <caret line="491" column="0" lean-forward="false" selection-start-line="491" selection-start-column="0" selection-end-line="491" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/tensorflow/python/client/session.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="25607">
+          <caret line="904" column="0" lean-forward="false" selection-start-line="904" selection-start-column="0" selection-end-line="904" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Interval.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="174">
+          <caret line="6" column="29" lean-forward="false" selection-start-line="6" selection-start-column="29" selection-end-line="6" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dataReader.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -395,7 +439,7 @@
     <entry file="file://$PROJECT_DIR$/multilayer_perceptron.py" />
     <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/numpy/core/numeric.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
+        <state relative-caret-position="13659">
           <caret line="491" column="0" lean-forward="false" selection-start-line="491" selection-start-column="0" selection-end-line="491" selection-end-column="0" />
           <folding />
         </state>
@@ -403,36 +447,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/tensorflow/python/client/session.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
+        <state relative-caret-position="25607">
           <caret line="904" column="0" lean-forward="false" selection-start-line="904" selection-start-column="0" selection-end-line="904" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="232">
+          <caret line="79" column="48" lean-forward="true" selection-start-line="79" selection-start-column="48" selection-end-line="79" selection-end-column="48" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Interval.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="7" column="59" lean-forward="false" selection-start-line="7" selection-start-column="59" selection-end-line="7" selection-end-column="59" />
+        <state relative-caret-position="146">
+          <caret line="11" column="18" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dataReader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1023">
-          <caret line="254" column="20" lean-forward="true" selection-start-line="254" selection-start-column="20" selection-end-line="254" selection-end-column="20" />
+        <state relative-caret-position="264">
+          <caret line="210" column="31" lean-forward="true" selection-start-line="210" selection-start-column="31" selection-end-line="210" selection-end-column="31" />
           <folding>
             <element signature="e#730#740#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="185" column="38" lean-forward="false" selection-start-line="185" selection-start-column="38" selection-end-line="185" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -90,9 +90,8 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
                 break
             start_index = start_index+1
         i = i+1
-    for x in range(0, len(to_return)):
-        print("Start: ", to_return[x].start_time, ", End: ", to_return[x].end_time)
-    print("======================================================================")
+    # for x in range(0, len(to_return)):
+    #     print("Start: ", to_return[x].start_time, ", End: ", to_return[x].end_time)
     return to_return
 
 
@@ -138,7 +137,11 @@ def extract_emg( intervals, emg_path, emg_num ):
         if add_data:
             temp.append(emg_column[i])
         i = i + 1
-    return to_return
+
+    result = []
+    for x in range(0, len(to_return)):
+        result += to_return[x]
+    return result
 
 
 
@@ -177,7 +180,6 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
                  path_right_orientation, path_right_accelero,
                  path_enter_orientation, path_enter_accelero,
                  num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg):
-    print("COME")
     to_return = []
     emg_data_list = []
     expected_output_list = []
@@ -190,7 +192,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
 
     # find the average length of emg time interval ( for generic case )
     average_length = int((len(emg_forward_timestamp) + len(emg_backward_timestamp) + len(emg_left_timestamp) +
-                          len(emg_right_timestamp) + len(emg_enter_timestamp))/80)
+                          len(emg_right_timestamp) + len(emg_enter_timestamp))/8)
 
     print("AVERAGE LENGTH: ", average_length)
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
@@ -211,17 +213,17 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
 
         # append all EMG data to the emg_data_list in one BIG LIST
         # append the corresponding output expectation in an expected_output_list
-        for x in range(0, 10):
-            emg_data_list.append(forward_emg_column[x])
-            expected_output_list.append([1, 0, 0, 0, 0])
-            emg_data_list.append(backward_emg_column[x])
-            expected_output_list.append([0, 1, 0, 0, 0])
-            emg_data_list.append(left_emg_column[x])
-            expected_output_list.append([0, 0, 1, 0, 0])
-            emg_data_list.append(right_emg_column[x])
-            expected_output_list.append([0, 0, 0, 1, 0])
-            emg_data_list.append(enter_emg_column[x])
-            expected_output_list.append([0, 0, 0, 0, 1])
+
+        emg_data_list.append(forward_emg_column)
+        expected_output_list.append([1, 0, 0, 0, 0])
+        emg_data_list.append(backward_emg_column)
+        expected_output_list.append([0, 1, 0, 0, 0])
+        emg_data_list.append(left_emg_column)
+        expected_output_list.append([0, 0, 1, 0, 0])
+        emg_data_list.append(right_emg_column)
+        expected_output_list.append([0, 0, 0, 1, 0])
+        emg_data_list.append(enter_emg_column)
+        expected_output_list.append([0, 0, 0, 0, 1])
         i = i+1
 
     # now we compare every emg data record with the average_length.
@@ -229,7 +231,6 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     # CASE2: if x > average_length, then cut off the edges.
     i = 0
     while i < len(emg_data_list):
-        print(len(emg_data_list[i]))
         num_zeros_required = average_length - len(emg_data_list[i])
         if num_zeros_required > 0:
             zeros_each_side = int(num_zeros_required/2)
