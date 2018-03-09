@@ -1,3 +1,12 @@
+#=====================================================================================================#
+#                                                                                                     #
+# dataReader.py                                                                                       #
+#                                                                                                     #
+# Author: Kyle                                                                                        #
+# Purpose: This .py file handles the data structures that can be used in the multi-layer perceptron.  #
+#=====================================================================================================#
+
+
 import csv
 from Interval import Interval
 from collections import defaultdict
@@ -16,7 +25,6 @@ def separateSets(orientation_path, accelero_path):
     ori_timestamp_list = find_nochange_periods(orientation_list['timestamp'], orientation_list['x'],
                                                orientation_list['y'], orientation_list['z'])
     peak_value = find_peak(accelero_list['y'])
-    print(peak_value)
     intervals = make_intervals(peak_value, ori_timestamp_list, accelero_list)
     intervals = refineSets(intervals)
     return intervals
@@ -149,6 +157,102 @@ def find_closest_timestamp_interval_list(intervals, list):
     return to_return
 
 
+#==================================================================================
+# get_input_x
+#   this function takes in the paths of all the necessary .csv files and the number
+#   of emg data columns. This function creates a data structure that can be used
+#   as as input for our MLP.
+#
+#   The returning data structure looks like
+#   [ [[1,2,3], [1, 0, 0, 0, 0]], [[3,2,1], [0, 1, 0, 0, 0]], ... ]
+#   Where to_return[0][0] would get you the emg data for the input and to_return[0][1]
+#   would get you the expected output for the corresponding emg data.
+#==================================================================================
+def get_input_x( path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero,
+                 num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg):
+    print("COME")
+    to_return = []
+    emg_data_list = []
+    expected_output_list = []
+    # timestamp list for each key
+    emg_forward_timestamp = read_in_file(path_forward_emg)['timestamp']
+    emg_backward_timestamp = read_in_file(path_backward_emg)['timestamp']
+    emg_left_timestamp = read_in_file(path_left_emg)['timestamp']
+    emg_right_timestamp = read_in_file(path_right_emg)['timestamp']
+    emg_enter_timestamp = read_in_file(path_enter_emg)['timestamp']
+
+    # find the average length of emg time interval ( for generic case )
+    average_length = int((len(emg_forward_timestamp) + len(emg_backward_timestamp) + len(emg_left_timestamp) +
+                          len(emg_right_timestamp) + len(emg_enter_timestamp))/70)
+
+    print("AVERAGE LENGTH: ", average_length)
+    accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
+    accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
+    accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
+    accelero_right_intervals = separateSets(path_right_orientation, path_right_accelero)
+    accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
+
+    # now we have all the intervals, we need to extract emg data using these intervals
+    i = 0
+    while i < num_emg_columns:
+        emg_column_str = 'emg'+str(i+1)
+        forward_emg_column = extract_emg(accelero_forward_intervals, path_forward_emg, emg_column_str)
+        backward_emg_column = extract_emg(accelero_backward_intervals, path_backward_emg, emg_column_str)
+        left_emg_column = extract_emg(accelero_left_intervals, path_left_emg, emg_column_str)
+        right_emg_column = extract_emg(accelero_right_intervals, path_right_emg, emg_column_str)
+        enter_emg_column = extract_emg(accelero_enter_intervals, path_enter_emg, emg_column_str)
+
+        # append all EMG data to the emg_data_list in one BIG LIST
+        # append the corresponding output expectation in an expected_output_list
+        for x in range(0, 10):
+            emg_data_list.append(forward_emg_column[x])
+            expected_output_list.append([1, 0, 0, 0, 0])
+            emg_data_list.append(backward_emg_column[x])
+            expected_output_list.append([0, 1, 0, 0, 0])
+            emg_data_list.append(left_emg_column[x])
+            expected_output_list.append([0, 0, 1, 0, 0])
+            emg_data_list.append(right_emg_column[x])
+            expected_output_list.append([0, 0, 0, 1, 0])
+            emg_data_list.append(enter_emg_column[x])
+            expected_output_list.append([0, 0, 0, 0, 1])
+        i = i+1
+
+    # now we compare every emg data record with the average_length.
+    # CASE1: if x < average_length, pad with zeros at each side.
+    # CASE2: if x > average_length, then cut off the edges.
+    i = 0
+    while i < len(emg_data_list):
+        num_zeros_required = average_length - len(emg_data_list[i])
+        if num_zeros_required > 0:
+            zeros_each_side = int(num_zeros_required/2)
+            for x in range(0, zeros_each_side):
+                emg_data_list[i].append('0')
+                emg_data_list[i].insert(0, '0')
+        elif num_zeros_required < 0:
+            cut_each_side = abs(int(num_zeros_required/2))
+            cut_from = cut_each_side
+            cut_to = len(emg_data_list[i]) - cut_each_side
+            emg_data_list[i] = emg_data_list[i][cut_from:cut_to]
+        i = i+1
+
+    # Here, we finally create an ideal data structure
+
+    # [ [[1,2,3], [1, 0, 0, 0, 0]], [[3,2,1], [0, 1, 0, 0, 0]], ... ]
+    for x in range(0,len(emg_data_list)):
+        to_add = []
+        to_add.append(list(map(float, emg_data_list[x]))) # convert it to list of float data
+        to_add.append(expected_output_list[x])
+        to_return.append(to_add)
+
+    return to_return
+
+
+
+
 
 #TODO: Now that we have 10 intervals(9 or 11), we split into training and testing data. 0~8 will be training and 10 will be testing data
 
@@ -157,7 +261,6 @@ backward_invervals = separateSets('./data/Backward/orientation-1456704054.csv', 
 emg_column1 = extract_emg(backward_invervals, './data/Backward/emg-1456704054.csv', 'emg1')
 #print("Printing EMG1 data. 10 intervals' actual data")
 #print("Backward: ", len(backward_invervals))
-
 
 #forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv')
 #print("Forward: ", len(forward_intervals))
@@ -168,3 +271,11 @@ emg_column1 = extract_emg(backward_invervals, './data/Backward/emg-1456704054.cs
 #print("left: ", len(left_intervals))
 #enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
 #print("enter: ", len(enter_intervals))
+
+get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+            './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+            './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+            './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
+            './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+            './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
