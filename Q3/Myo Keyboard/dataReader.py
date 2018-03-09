@@ -272,10 +272,10 @@ emg_column1 = extract_emg(backward_invervals, './data/Backward/emg-1456704054.cs
 #enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
 #print("enter: ", len(enter_intervals))
 
-get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-            './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-            './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-            './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
-            './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-            './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+# get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+#             './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+#             './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+#             './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+#             './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
+#             './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+#             './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')

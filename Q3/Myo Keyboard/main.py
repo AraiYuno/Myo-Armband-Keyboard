@@ -1,77 +1,85 @@
 import numpy as np
 import random
-from dataReader import separateSets, extract_emg
+from dataReader import separateSets, extract_emg,get_input_x
 import tensorflow as tf
 
 def create_feature_sets_and_labels(test_size=0.1):
 
-    forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv',
-                                     './data/Forward/accelerometer-1456703940.csv')
-    backward_intervals = separateSets('./data/Backward/orientation-1456704054.csv',
-                                      './data/Backward/accelerometer-1456704054.csv')
-    right_intervals = separateSets('./data/Right/orientation-1456704146.csv',
-                                   './data/Right/accelerometer-1456704146.csv')
-    left_intervals = separateSets('./data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv')
-    enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv',
-                                   './data/Enter/accelerometer-1456704184.csv')
-
-    forward_emg_column1 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg1')
-    forward_emg_column2 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg2')
-    forward_emg_column3 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg3')
-    forward_emg_column4 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg4')
-
-    backward_emg_column1 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg1')
-    backward_emg_column2 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg2')
-    backward_emg_column3 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg3')
-    backward_emg_column4 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg4')
-
-    left_emg_column1 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg1')
-    left_emg_column2 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg2')
-    left_emg_column3 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg3')
-    left_emg_column4 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg4')
-
-    right_emg_column1 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg1')
-    right_emg_column2 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg2')
-    right_emg_column3 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg3')
-    right_emg_column4 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg4')
-
-    enter_emg_column1 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg1')
-    enter_emg_column2 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg2')
-    enter_emg_column3 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg3')
-    enter_emg_column4 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg4')
-
-
-    features = []
-    features.append([forward_emg_column1, [1, 0, 0, 0, 0]])
-    features.append([backward_emg_column1, [0, 1, 0, 0, 0]])
-    features.append([left_emg_column1, [0, 0, 1, 0, 0]])
-    features.append([right_emg_column1,[0, 0, 0, 1, 0]])
-    features.append([enter_emg_column1,[0, 0, 0, 0, 1]])
-
-    # features.append([forward_emg_column2, [1, 0, 0, 0, 0]])
-    # features.append([backward_emg_column2, [0, 1, 0, 0, 0]])
-    # features.append([left_emg_column2, [0, 0, 1, 0, 0]])
-    # features.append([right_emg_column2, [0, 0, 0, 1, 0]])
-    # features.append([enter_emg_column2, [0, 0, 0, 0, 1]])
+    # forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv',
+    #                                  './data/Forward/accelerometer-1456703940.csv')
+    # backward_intervals = separateSets('./data/Backward/orientation-1456704054.csv',
+    #                                   './data/Backward/accelerometer-1456704054.csv')
+    # right_intervals = separateSets('./data/Right/orientation-1456704146.csv',
+    #                                './data/Right/accelerometer-1456704146.csv')
+    # left_intervals = separateSets('./data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv')
+    # enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv',
+    #                                './data/Enter/accelerometer-1456704184.csv')
     #
-    # features.append([forward_emg_column3, [1, 0, 0, 0, 0]])
-    # features.append([backward_emg_column3, [0, 1, 0, 0, 0]])
-    # features.append([left_emg_column3, [0, 0, 1, 0, 0]])
-    # features.append([right_emg_column3, [0, 0, 0, 1, 0]])
-    # features.append([enter_emg_column3, [0, 0, 0, 0, 1]])
+    # forward_emg_column1 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg1')
+    # forward_emg_column2 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg2')
+    # forward_emg_column3 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg3')
+    # forward_emg_column4 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg4')
     #
-    # features.append([forward_emg_column4, [1, 0, 0, 0, 0]])
-    # features.append([backward_emg_column4, [0, 1, 0, 0, 0]])
-    # features.append([left_emg_column4, [0, 0, 1, 0, 0]])
-    # features.append([right_emg_column4, [0, 0, 0, 1, 0]])
-    # features.append([enter_emg_column4, [0, 0, 0, 0, 1]])
+    # backward_emg_column1 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg1')
+    # backward_emg_column2 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg2')
+    # backward_emg_column3 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg3')
+    # backward_emg_column4 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg4')
+    #
+    # left_emg_column1 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg1')
+    # left_emg_column2 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg2')
+    # left_emg_column3 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg3')
+    # left_emg_column4 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg4')
+    #
+    # right_emg_column1 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg1')
+    # right_emg_column2 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg2')
+    # right_emg_column3 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg3')
+    # right_emg_column4 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg4')
+    #
+    # enter_emg_column1 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg1')
+    # enter_emg_column2 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg2')
+    # enter_emg_column3 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg3')
+    # enter_emg_column4 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg4')
+    #
+    #
+    # features = []
+    # features.append([forward_emg_column1, [1, 0, 0, 0, 0]])
+    # features.append([backward_emg_column1, [0, 1, 0, 0, 0]])
+    # features.append([left_emg_column1, [0, 0, 1, 0, 0]])
+    # features.append([right_emg_column1,[0, 0, 0, 1, 0]])
+    # features.append([enter_emg_column1,[0, 0, 0, 0, 1]])
+    #
+    # # features.append([forward_emg_column2, [1, 0, 0, 0, 0]])
+    # # features.append([backward_emg_column2, [0, 1, 0, 0, 0]])
+    # # features.append([left_emg_column2, [0, 0, 1, 0, 0]])
+    # # features.append([right_emg_column2, [0, 0, 0, 1, 0]])
+    # # features.append([enter_emg_column2, [0, 0, 0, 0, 1]])
+    # #
+    # # features.append([forward_emg_column3, [1, 0, 0, 0, 0]])
+    # # features.append([backward_emg_column3, [0, 1, 0, 0, 0]])
+    # # features.append([left_emg_column3, [0, 0, 1, 0, 0]])
+    # # features.append([right_emg_column3, [0, 0, 0, 1, 0]])
+    # # features.append([enter_emg_column3, [0, 0, 0, 0, 1]])
+    # #
+    # # features.append([forward_emg_column4, [1, 0, 0, 0, 0]])
+    # # features.append([backward_emg_column4, [0, 1, 0, 0, 0]])
+    # # features.append([left_emg_column4, [0, 0, 1, 0, 0]])
+    # # features.append([right_emg_column4, [0, 0, 0, 1, 0]])
+    # # features.append([enter_emg_column4, [0, 0, 0, 0, 1]])
+
+    features = get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+            './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+            './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+            './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
+            './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+            './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
 
     # shuffle out features and turn into np.array
     random.shuffle(features)
     features = np.array(features)
 
     # split a portion of the features into tests
-    testing_size = int(1)#test_size * len(features))
+    testing_size = int(test_size * len(features))
 
     # create train and test lists
     train_x = list(features[:, 0][:-testing_size])
@@ -92,7 +100,7 @@ n_nodes_hl2 = 8
 # classes in our output
 n_classes = 5
 # iterations and batch-size to build out model
-hm_epochs = 1000
+hm_epochs = 200
 batch_size = 4
 
 
@@ -178,10 +186,11 @@ def train_neural_network(x):
 
         # print predictions using our model
         for i, t in enumerate(test_x):
-            print('prediction for:', test_x[i])
+            print('prediction expected:',test_y[i])
             output = prediction.eval(feed_dict={x: [test_x[i]]})
             # normalize the prediction values
-            print(tf.sigmoid(output[0][0]).eval(), tf.sigmoid(output[0][1]).eval(), tf.sigmoid(output[0][2]).eval(), tf.sigmoid(output[0][3]).eval(), tf.sigmoid(output[0][4]).eval())
+            print(tf.nn.softmax(output).eval())
+
     return output_weight, output_bias
 
 
