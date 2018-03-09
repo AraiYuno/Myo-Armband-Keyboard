@@ -86,10 +86,13 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
         while start_index < end_index:
             if accelero_y[start_index] < peak_value:
                #print( timestamp_list[i-1] +", " + timestamp_list[i])
-                to_return.append(Interval(timestamp_list[i-1], timestamp_list[i]))
+                to_return.append(Interval(accelero_timestamp[start_index-15], accelero_timestamp[start_index+30]))
                 break
             start_index = start_index+1
         i = i+1
+    for x in range(0, len(to_return)):
+        print("Start: ", to_return[x].start_time, ", End: ", to_return[x].end_time)
+    print("======================================================================")
     return to_return
 
 
@@ -187,7 +190,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
 
     # find the average length of emg time interval ( for generic case )
     average_length = int((len(emg_forward_timestamp) + len(emg_backward_timestamp) + len(emg_left_timestamp) +
-                          len(emg_right_timestamp) + len(emg_enter_timestamp))/70)
+                          len(emg_right_timestamp) + len(emg_enter_timestamp))/80)
 
     print("AVERAGE LENGTH: ", average_length)
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
@@ -226,6 +229,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     # CASE2: if x > average_length, then cut off the edges.
     i = 0
     while i < len(emg_data_list):
+        print(len(emg_data_list[i]))
         num_zeros_required = average_length - len(emg_data_list[i])
         if num_zeros_required > 0:
             zeros_each_side = int(num_zeros_required/2)
@@ -252,30 +256,10 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
 
 
 
-
-
-#TODO: Now that we have 10 intervals(9 or 11), we split into training and testing data. 0~8 will be training and 10 will be testing data
-
-# MAIN EXECUTION
-backward_invervals = separateSets('./data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv')
-emg_column1 = extract_emg(backward_invervals, './data/Backward/emg-1456704054.csv', 'emg1')
-#print("Printing EMG1 data. 10 intervals' actual data")
-#print("Backward: ", len(backward_invervals))
-
-#forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv')
-#print("Forward: ", len(forward_intervals))
-#print(forward_intervals[0].end_time)
-#right_intervals = separateSets('./data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv')
-#print("Right: ", len(right_intervals))
-#left_intervals = separateSets('./data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv')
-#print("left: ", len(left_intervals))
-#enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
-#print("enter: ", len(enter_intervals))
-
 # get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-#             './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-#             './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-#             './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-#             './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
-#             './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-#             './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+#              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+#              './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+#              './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+#              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
+#              './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+#              './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')

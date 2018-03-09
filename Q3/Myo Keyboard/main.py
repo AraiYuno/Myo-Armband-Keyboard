@@ -70,17 +70,15 @@ def create_feature_sets_and_labels(test_size=0.1):
             './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
             './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
             './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
+            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 8,
             './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
             './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
 
     # shuffle out features and turn into np.array
     random.shuffle(features)
     features = np.array(features)
-
     # split a portion of the features into tests
     testing_size = int(test_size * len(features))
-
     # create train and test lists
     train_x = list(features[:, 0][:-testing_size])
     train_y = list(features[:, 1][:-testing_size])
