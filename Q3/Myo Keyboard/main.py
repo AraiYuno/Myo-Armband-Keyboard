@@ -3,7 +3,7 @@ import random
 from dataReader import separateSets, extract_emg,get_input_x, get_gyro_y
 import tensorflow as tf
 
-def create_feature_sets_and_labels(test_size=0.1):
+def create_feature_sets_and_labels(test_size=0.3):
 
     # forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv',
     #                                  './data/Forward/accelerometer-1456703940.csv')
@@ -104,11 +104,13 @@ train_x, train_y, test_x, test_y = create_feature_sets_and_labels()
 # hidden layers and their nodes
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
+n_nodes_hl3 = 50
+n_nodes_hl4 = 50
 
 # classes in our output
 n_classes = 5
 # iterations and batch-size to build out model
-hm_epochs = 100
+hm_epochs = 12
 batch_size = 4
 
 
@@ -125,8 +127,16 @@ hidden_2_layer = {'f_fum': n_nodes_hl2,
                   'weight': tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
                   'bias': tf.Variable(tf.random_normal([n_nodes_hl2]))}
 
+hidden_3_layer = {'f_fum': n_nodes_hl3,
+                  'weight': tf.Variable(tf.random_normal([n_nodes_hl2, n_nodes_hl3])),
+                  'bias': tf.Variable(tf.random_normal([n_nodes_hl3]))}
+
+hidden_4_layer = {'f_fum': n_nodes_hl4,
+                  'weight': tf.Variable(tf.random_normal([n_nodes_hl3, n_nodes_hl4])),
+                  'bias': tf.Variable(tf.random_normal([n_nodes_hl4]))}
+
 output_layer = {'f_fum': None,
-                'weight': tf.Variable(tf.random_normal([n_nodes_hl2, n_classes])),
+                'weight': tf.Variable(tf.random_normal([n_nodes_hl4, n_classes])),
                 'bias': tf.Variable(tf.random_normal([n_classes])), }
 
 
@@ -139,6 +149,12 @@ def neural_network_model(data):
     # hidden layer 2: (hidden_layer_1 * W) + b
     l2 = tf.add(tf.matmul(l1, hidden_2_layer['weight']), hidden_2_layer['bias'])
     l2 = tf.sigmoid(l2)
+
+    l3 = tf.add(tf.matmul(l1, hidden_3_layer['weight']), hidden_3_layer['bias'])
+    l3 = tf.sigmoid(l3)
+
+    l4 = tf.add(tf.matmul(l1, hidden_4_layer['weight']), hidden_4_layer['bias'])
+    l4 = tf.sigmoid(l4)
 
     # output: (hidden_layer_2 * W) + b
     output = tf.matmul(l2, output_layer['weight']) + output_layer['bias']
