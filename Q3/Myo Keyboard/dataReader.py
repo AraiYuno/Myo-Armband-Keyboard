@@ -26,7 +26,6 @@ def separateSets(orientation_path, accelero_path):
                                                orientation_list['y'], orientation_list['z'])
     peak_value = find_peak(accelero_list['y'])
     intervals = make_intervals(peak_value, ori_timestamp_list, accelero_list)
-    intervals = refineSets(intervals)
     return intervals
 
 
@@ -90,8 +89,6 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
                 break
             start_index = start_index+1
         i = i+1
-    # for x in range(0, len(to_return)):
-    #     print("Start: ", to_return[x].start_time, ", End: ", to_return[x].end_time)
     return to_return
 
 
@@ -99,15 +96,13 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
 # refineSets
 #   takes in intervals list as a parameter and make them all to 10 intervals
 #==================================================================================
-def refineSets( intervals ):
+def refineSets(intervals):
     while len(intervals) != 10:
         if len(intervals) > 10:
             intervals.pop(0)
         if len(intervals) < 10:
-            intervals.append(intervals[len(intervals)-1])
+            intervals.append(intervals[len(intervals)-2])
     return intervals
-
-
 
 
 
@@ -122,7 +117,8 @@ def extract_emg( intervals, emg_path, emg_num ):
     emg_timestamp = emg['timestamp']
     emg_column = emg[emg_num]  # specific column within the emg .csv file
     emg_intervals = find_closest_timestamp_interval_list(intervals, emg_timestamp)
-    to_return = temp = []
+    to_return = []
+    temp = []
     # now we have the emg_intervals. We actually need the "DATA" sets
     add_data = False
     i = j = 0
@@ -138,11 +134,36 @@ def extract_emg( intervals, emg_path, emg_num ):
             temp.append(emg_column[i])
         i = i + 1
 
-    result = []
-    for x in range(0, len(to_return)):
-        result += to_return[x]
-    return result
+    return to_return
 
+
+
+def extract_accelero(intervals, accelero_path, axis):
+    accelero_file = read_in_file(accelero_path)
+    accelero_timestamp = accelero_file['timestamp']
+    accelero_axis = accelero_file[axis]
+    accelero_intervals = find_closest_timestamp_interval_list(intervals, accelero_timestamp)
+    to_return = []
+    temp = []
+    # now we have the emg_intervals. We actually need the "DATA" sets
+    add_data = False
+    i = 0
+    j = 0
+
+    while i < len(accelero_axis) and j < len(accelero_intervals):
+        if float(accelero_intervals[j].start_time) == float(accelero_timestamp[i]):
+            temp = []
+            add_data = True
+        if float(accelero_intervals[j].end_time) == float(accelero_timestamp[i]):
+            add_data = False
+            to_return.append(temp)
+            i = i - 5
+            j = j + 1
+        if add_data:
+            temp.append(accelero_axis[i])
+        i = i + 1
+    #print("to_return: ", len(to_return))
+    return refineSets(to_return)
 
 
 #==================================================================================
@@ -252,10 +273,71 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
         to_add.append(list(map(float, emg_data_list[x]))) # convert it to list of float data
         to_add.append(expected_output_list[x])
         to_return.append(to_add)
-
     return to_return
 
 
+def get_input_accelero(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero):
+    to_return = []
+    emg_data_list = []
+    expected_output_list = []
+
+    average_length = 45
+
+    print("AVERAGE LENGTH: ", average_length)
+    accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
+    accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
+    accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
+    accelero_right_intervals = separateSets(path_right_orientation, path_right_accelero)
+    accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
+
+
+    forward_accelero_axis = extract_accelero(accelero_forward_intervals, path_forward_accelero, 'y')
+    backward_accelero_axis = extract_accelero(accelero_backward_intervals, path_backward_accelero, 'y')
+    left_accelero_axis = extract_accelero(accelero_left_intervals, path_left_accelero, 'y')
+    right_accelero_axis = extract_accelero(accelero_right_intervals, path_right_accelero, 'y')
+    enter_accelero_axis = extract_accelero(accelero_enter_intervals, path_enter_accelero, 'y')
+
+    #print(forward_accelero_axis)
+    for x in range(0, len(forward_accelero_axis)):
+        emg_data_list.append(forward_accelero_axis[x])
+        expected_output_list.append([1, 0, 0, 0, 0])
+        emg_data_list.append(backward_accelero_axis[x])
+        expected_output_list.append([0, 1, 0, 0, 0])
+        emg_data_list.append(left_accelero_axis[x])
+        expected_output_list.append([0, 0, 1, 0, 0])
+        emg_data_list.append(right_accelero_axis[x])
+        expected_output_list.append([0, 0, 0, 1, 0])
+        emg_data_list.append(enter_accelero_axis[x])
+        expected_output_list.append([0, 0, 0, 0, 1])
+
+    i = 0
+    while i < len(emg_data_list):
+        num_zeros_required = average_length - len(emg_data_list[i])
+        if num_zeros_required > 0:
+            zeros_each_side = int(num_zeros_required / 2)
+            for x in range(0, zeros_each_side):
+                emg_data_list[i].append('0')
+                emg_data_list[i].insert(0, '0')
+        elif num_zeros_required < 0:
+            cut_each_side = abs(int(num_zeros_required / 2))
+            cut_from = cut_each_side
+            cut_to = len(emg_data_list[i]) - cut_each_side
+            emg_data_list[i] = emg_data_list[i][cut_from:cut_to]
+        i = i + 1
+
+    # Here, we finally create an ideal data structure
+    # [ [[1,2,3], [1, 0, 0, 0, 0]], [[3,2,1], [0, 1, 0, 0, 0]], ... ]
+    for y in range(0, len(emg_data_list)):
+        to_add = []
+        to_add.append(list(map(float, emg_data_list[y])))  # convert it to list of float data
+        to_add.append(expected_output_list[y])
+        to_return.append(to_add)
+    print(to_return)
+    return to_return
 
 # get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
 #              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
@@ -264,3 +346,9 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
 #              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
 #              './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
 #              './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+
+# get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+#              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+#              './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+#              './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+#              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')

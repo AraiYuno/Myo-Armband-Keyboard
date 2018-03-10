@@ -1,6 +1,5 @@
 import numpy as np
-import random
-from dataReader import separateSets, extract_emg,get_input_x
+from dataReader import separateSets, extract_emg,get_input_x, get_input_accelero
 import tensorflow as tf
 
 def create_feature_sets_and_labels(test_size=0.1):
@@ -66,13 +65,19 @@ def create_feature_sets_and_labels(test_size=0.1):
     # # features.append([right_emg_column4, [0, 0, 0, 1, 0]])
     # # features.append([enter_emg_column4, [0, 0, 0, 0, 1]])
 
-    features = get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-            './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-            './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-            './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 8,
-            './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-            './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+    # features = get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+    #         './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+    #         './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+    #         './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+    #         './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 8,
+    #         './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+    #         './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+
+    features = get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+             './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+             './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+             './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+             './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
 
     # shuffle out features and turn into np.array
     #random.shuffle(features)
@@ -92,13 +97,13 @@ train_x, train_y, test_x, test_y = create_feature_sets_and_labels()
 
 
 # hidden layers and their nodes
-n_nodes_hl1 = 8
-n_nodes_hl2 = 8
+n_nodes_hl1 = 5
+n_nodes_hl2 = 5
 
 # classes in our output
 n_classes = 5
 # iterations and batch-size to build out model
-hm_epochs = 50
+hm_epochs = 1000
 batch_size = 4
 
 
@@ -132,7 +137,6 @@ def neural_network_model(data):
 
     # output: (hidden_layer_2 * W) + b
     output = tf.matmul(l2, output_layer['weight']) + output_layer['bias']
-
     return output
 
 
