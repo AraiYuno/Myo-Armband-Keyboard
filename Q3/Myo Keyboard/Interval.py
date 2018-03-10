@@ -14,3 +14,6 @@ class Interval:
 
     def get_start_time(self):
         return self.start_time
+
+    def __repr__(self):
+        return self.start_time +":::"+self.end_time

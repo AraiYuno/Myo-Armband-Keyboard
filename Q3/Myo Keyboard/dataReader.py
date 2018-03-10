@@ -10,6 +10,7 @@
 import csv
 from Interval import Interval
 from collections import defaultdict
+import numpy as np
 from bisect import bisect_left
 
 # Global Variables
@@ -73,7 +74,7 @@ def find_peak(y_axis):
 
 #==================================================================================
 # make_intervals
-#   returns 10 intervals that can be used in EMG
+#   returns 10 intervals that can be used in gyro
 #==================================================================================
 def make_intervals(peak_value, timestamp_list, accelero_list):
     i = 1
@@ -194,7 +195,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     average_length = int((len(emg_forward_timestamp) + len(emg_backward_timestamp) + len(emg_left_timestamp) +
                           len(emg_right_timestamp) + len(emg_enter_timestamp))/8)
 
-    print("AVERAGE LENGTH: ", average_length)
+    #print("AVERAGE LENGTH: ", average_length)
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
     accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
     accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
@@ -254,6 +255,110 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
         to_return.append(to_add)
 
     return to_return
+
+def get_gyro_y(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero,
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro ):
+    to_return = []
+    gyro_data_list = []
+    expected_output_list = []
+    # timestamp list for each key
+    gyro_forward_timestamp = read_in_file(path_forward_gyro)['timestamp']
+    gyro_backward_timestamp = read_in_file(path_backward_gyro)['timestamp']
+    gyro_left_timestamp = read_in_file(path_left_gyro)['timestamp']
+    gyro_right_timestamp = read_in_file(path_right_gyro)['timestamp']
+    gyro_enter_timestamp = read_in_file(path_enter_gyro)['timestamp']
+
+    # find the average length of emg time interval ( for generic case )
+    average_length = 50#int((len(gyro_forward_timestamp) + len(gyro_backward_timestamp) + len(gyro_left_timestamp) +
+                         # len(gyro_right_timestamp) + len(gyro_enter_timestamp))/8)
+
+    print("AVERAGE LENGTH: ", average_length)
+    accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
+    accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
+    accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
+    accelero_right_intervals = separateSets(path_right_orientation, path_right_accelero)
+    accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
+
+
+    forward_gyro_column = extract_gyro(accelero_forward_intervals, path_forward_gyro)
+    #print("abscddls",forward_gyro_column)
+    backward_gyro_column = extract_gyro(accelero_backward_intervals, path_backward_gyro)
+    left_gyro_column = extract_gyro(accelero_left_intervals, path_left_gyro)
+    right_gyro_column = extract_gyro(accelero_right_intervals, path_right_gyro)
+    enter_gyro_column = extract_gyro(accelero_enter_intervals, path_enter_gyro)
+
+    # append all gyro data to the gyro_data_list in one BIG LIST
+    # append the corresponding output expectation in an expected_output_list
+    for i in range(0,len(forward_gyro_column)):
+        gyro_data_list.append(forward_gyro_column[i])
+        expected_output_list.append([1, 0, 0, 0, 0])
+        gyro_data_list.append(backward_gyro_column[i])
+        expected_output_list.append([0, 1, 0, 0, 0])
+        gyro_data_list.append(left_gyro_column[i])
+        expected_output_list.append([0, 0, 1, 0, 0])
+        gyro_data_list.append(right_gyro_column[i])
+        expected_output_list.append([0, 0, 0, 1, 0])
+        gyro_data_list.append(enter_gyro_column[i])
+        expected_output_list.append([0, 0, 0, 0, 1])
+
+    # now we compare every gyro data record with the average_length.
+    # CASE1: if x < average_length, pad with zeros at each side.
+    # CASE2: if x > average_length, then cut off the edges.
+
+    print("bbbbb",gyro_data_list)
+    i = 0
+    while i < len(gyro_data_list):
+        print(len(gyro_data_list[i]))
+        num_zeros_required = average_length - len(gyro_data_list[i])
+        if num_zeros_required > 0:
+            zeros_each_side = int(num_zeros_required / 2)
+            for x in range(0, zeros_each_side):
+                gyro_data_list[i].append('0')
+                gyro_data_list[i].insert(0, '0')
+        elif num_zeros_required < 0:
+            cut_each_side = abs(int(num_zeros_required / 2))
+            cut_from = cut_each_side
+            cut_to = len(gyro_data_list[i]) - cut_each_side
+            gyro_data_list[i] = gyro_data_list[i][cut_from:cut_to]
+        i = i + 1
+
+    # Here, we finally create an ideal data structure
+
+    # [ [[1,2,3], [1, 0, 0, 0, 0]], [[3,2,1], [0, 1, 0, 0, 0]], ... ]
+    #print("hello",gyro_data_list)
+    for x in range(0, len(gyro_data_list)):
+        to_add = []
+        to_add.append(list(map(float, gyro_data_list[x])))  # convert it to list of float data
+        to_add.append(expected_output_list[x])
+        to_return.append(to_add)
+    #print (to_return)
+    return to_return
+
+
+def extract_gyro( intervals, gyro_path):
+    #print(intervals)
+    gyro = read_in_file(gyro_path)
+    gyro_timestamp = np.array(gyro['timestamp'])
+
+    gyro_data = gyro['y']
+    #print(gyro_data)
+    to_return =[]
+    gyro_timestamp = gyro['timestamp']
+    gyro_column =  gyro['y']
+    temp = []
+    for i in range(0, len(intervals)):
+        #print(gyro_timestamp.index(intervals[i].start_time), gyro_timestamp.index(intervals[i].end_time))
+        temp = gyro_data[gyro_timestamp.index(intervals[i].start_time): gyro_timestamp.index(intervals[i].end_time)]
+        to_return.append(temp)
+    #print(type(to_return))
+    return to_return
+
+
+
 
 
 
