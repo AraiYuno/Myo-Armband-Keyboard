@@ -132,7 +132,6 @@ def extract_emg( intervals, emg_path, emg_num ):
             temp.append(emg_column[i])
         i = i + 1
     return to_return
-
 #==================================================================================
 # extract_gyro
 #   returns the actual data sets of gyerometer with given 10 intervals
@@ -259,8 +258,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     emg_enter_timestamp = read_in_file(path_enter_emg)['timestamp']
 
     # find the average length of emg time interval ( for generic case )
-    average_length = int((len(emg_forward_timestamp) + len(emg_backward_timestamp) + len(emg_left_timestamp) +
-                          len(emg_right_timestamp) + len(emg_enter_timestamp))/8)
+    average_length = 182
 
     #print("AVERAGE LENGTH: ", average_length)
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
@@ -270,7 +268,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
 
     # now we have all the intervals, we need to extract emg data using these intervals
-    i = 0
+    i = 1
     while i < num_emg_columns:
         emg_column_str = 'emg'+str(i+1)
         forward_emg_column = extract_emg(accelero_forward_intervals, path_forward_emg, emg_column_str)
@@ -283,17 +281,17 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
         downscale(forward_emg_column)
         # append all EMG data to the emg_data_list in one BIG LIST
         # append the corresponding output expectation in an expected_output_list
-
-        emg_data_list.append(forward_emg_column)
-        expected_output_list.append([1, 0, 0, 0, 0])
-        emg_data_list.append(backward_emg_column)
-        expected_output_list.append([0, 1, 0, 0, 0])
-        emg_data_list.append(left_emg_column)
-        expected_output_list.append([0, 0, 1, 0, 0])
-        emg_data_list.append(right_emg_column)
-        expected_output_list.append([0, 0, 0, 1, 0])
-        emg_data_list.append(enter_emg_column)
-        expected_output_list.append([0, 0, 0, 0, 1])
+        for i in range(0, len(forward_emg_column)):
+            emg_data_list.append(forward_emg_column[i])
+            expected_output_list.append([1, 0, 0, 0, 0])
+            emg_data_list.append(backward_emg_column[i])
+            expected_output_list.append([0, 1, 0, 0, 0])
+            emg_data_list.append(left_emg_column[i])
+            expected_output_list.append([0, 0, 1, 0, 0])
+            emg_data_list.append(right_emg_column[i])
+            expected_output_list.append([0, 0, 0, 1, 0])
+            emg_data_list.append(enter_emg_column[i])
+            expected_output_list.append([0, 0, 0, 0, 1])
         i = i+1
 
     # now we compare every emg data record with the average_length.
@@ -313,16 +311,8 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
             cut_to = len(emg_data_list[i]) - cut_each_side
             emg_data_list[i] = emg_data_list[i][cut_from:cut_to]
         i = i+1
-
-    # Here, we finally create an ideal data structure
-
-    # [ [[1,2,3], [1, 0, 0, 0, 0]], [[3,2,1], [0, 1, 0, 0, 0]], ... ]
-    for x in range(0,len(emg_data_list)):
-        to_add = []
-        to_add.append(list(map(float, emg_data_list[x]))) # convert it to list of float data
-        to_add.append(expected_output_list[x])
-        to_return.append(to_add)
-    return to_return
+    print(emg_data_list)
+    return emg_data_list, expected_output_list
 
 
 #==================================================================================
@@ -363,7 +353,7 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
 
     # append all gyro data to the gyro_data_list in one BIG LIST
     # append the corresponding output expectation in an expected_output_list
-    for i in range(0,len(forward_gyro_column)):
+    for i in range(0, len(forward_gyro_column)):
         gyro_data_list.append(forward_gyro_column[i])
         expected_output_list.append([1, 0, 0, 0, 0])
         gyro_data_list.append(backward_gyro_column[i])
@@ -421,7 +411,7 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
-                 path_enter_orientation, path_enter_accelero):
+                 path_enter_orientation, path_enter_accelero,):
     to_return = []
     emg_data_list = []
     expected_output_list = []
@@ -477,16 +467,76 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
         to_add.append(list(map(float, emg_data_list[y])))  # convert it to list of float data
         to_add.append(expected_output_list[y])
         to_return.append(to_add)
-    print(to_return)
     return to_return
 
-get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-             './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-             './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-             './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-             './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 1,
-             './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-             './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+
+
+#===============================================================================
+# downscale
+#    this takes in list of accelero_intervals as a parameter and downscales it
+#
+#    Currently, this function should only downscale EMG data by skipping alternating
+#    values
+#===============================================================================
+def downscale(data_list):
+    to_return = []
+    for i in range(0, len(data_list)): # should be really 10
+        to_add = []
+        for j in range(0, len(data_list[i])):
+            if j % 3 == 0:
+                to_add.append(data_list[i][j])
+        to_return.append(to_add)
+    return to_return
+
+
+
+def get_input_multisensor(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero,
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro,
+                 num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg ):
+
+    to_return = []
+
+    gyro_intervals = get_input_gyro(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero,
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro )
+
+    emg_intervals,output_data_list = get_input_x(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero,
+                 num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg)
+    emg_intervals = downscale(emg_intervals)
+    print(len(emg_intervals),len(gyro_intervals))
+    for i in range(0, len(gyro_intervals)):
+        temp = []
+        temp += gyro_intervals[i][0]
+        temp += emg_intervals[i]
+        to_return.append(temp)
+    result = []
+
+    for i in range(0, len(to_return)):
+        temp = [to_return[i], output_data_list[i]]
+        result.append(temp)
+
+    return result
+
+
+
+# get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+#              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+#              './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+#              './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+#              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
+#              './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+#              './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
 
 # get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
 #              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
