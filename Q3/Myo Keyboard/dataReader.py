@@ -126,11 +126,11 @@ def extract_emg( intervals, emg_path, emg_num ):
         if float(emg_intervals[j].end_time) == float(emg_timestamp[i]):
             add_data = False
             to_return.append(temp)
+            i = 0
             j = j + 1
         if add_data:
             temp.append(emg_column[i])
         i = i + 1
-
     return to_return
 
 #==================================================================================
@@ -212,6 +212,25 @@ def find_closest_timestamp_interval_list(intervals, list):
     return to_return
 
 
+#===============================================================================
+# downscale
+#    this takes in list of accelero_intervals as a parameter and downscales it
+#
+#    Currently, this function should only downscale EMG data by skipping alternating
+#    values
+#===============================================================================
+def downscale(data_list):
+    to_return = []
+    for i in range(0, len(data_list)): # should be really 10
+        to_add = []
+        for j in range(0, len(data_list[i])):
+            if j % 2 == 0:
+                to_add.append(data_list[i][j])
+        to_return.append(to_add)
+    return to_return
+
+
+
 #==================================================================================
 # get_input_x
 #   this function takes in the paths of all the necessary .csv files and the number
@@ -260,6 +279,8 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
         right_emg_column = extract_emg(accelero_right_intervals, path_right_emg, emg_column_str)
         enter_emg_column = extract_emg(accelero_enter_intervals, path_enter_emg, emg_column_str)
 
+        print(len(forward_emg_column[0]))
+        downscale(forward_emg_column)
         # append all EMG data to the emg_data_list in one BIG LIST
         # append the corresponding output expectation in an expected_output_list
 
@@ -459,13 +480,13 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
     print(to_return)
     return to_return
 
-# get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-#              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-#              './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-#              './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-#              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
-#              './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-#              './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+             './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+             './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+             './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+             './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 1,
+             './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+             './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
 
 # get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
 #              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
