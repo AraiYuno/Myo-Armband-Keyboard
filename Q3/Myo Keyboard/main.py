@@ -2,7 +2,7 @@ import numpy as np
 from dataReader import separateSets, extract_emg,get_input_x, get_input_accelero, get_input_gyro
 import tensorflow as tf
 
-def create_feature_sets_and_labels(test_size=0.3):
+def create_feature_sets_and_labels(test_size=0.1):
 
     # forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv',
     #                                  './data/Forward/accelerometer-1456703940.csv')
