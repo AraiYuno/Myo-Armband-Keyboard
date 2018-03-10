@@ -101,15 +101,15 @@ train_x, train_y, test_x, test_y = create_feature_sets_and_labels()
 
 
 # hidden layers and their nodes
-n_nodes_hl1 = 50
-n_nodes_hl2 = 50
-n_nodes_hl3 = 50
-n_nodes_hl4 = 50
+n_nodes_hl1 = 25
+n_nodes_hl2 = 25
+n_nodes_hl3 = 25
+n_nodes_hl4 = 25
 
 # classes in our output
 n_classes = 5
 # iterations and batch-size to build out model
-hm_epochs = 12
+hm_epochs = 100
 batch_size = 4
 
 
@@ -149,14 +149,16 @@ def neural_network_model(data):
     l2 = tf.add(tf.matmul(l1, hidden_2_layer['weight']), hidden_2_layer['bias'])
     l2 = tf.sigmoid(l2)
 
-    l3 = tf.add(tf.matmul(l1, hidden_3_layer['weight']), hidden_3_layer['bias'])
+    # hidden layer 3: (hidden_layer_1 * W) + b
+    l3 = tf.add(tf.matmul(l2, hidden_3_layer['weight']), hidden_3_layer['bias'])
     l3 = tf.sigmoid(l3)
 
-    l4 = tf.add(tf.matmul(l1, hidden_4_layer['weight']), hidden_4_layer['bias'])
+    # hidden layer 4: (hidden_layer_1 * W) + b
+    l4 = tf.add(tf.matmul(l3, hidden_4_layer['weight']), hidden_4_layer['bias'])
     l4 = tf.sigmoid(l4)
 
     # output: (hidden_layer_2 * W) + b
-    output = tf.matmul(l2, output_layer['weight']) + output_layer['bias']
+    output = tf.matmul(l4, output_layer['weight']) + output_layer['bias']
     return output
 
 

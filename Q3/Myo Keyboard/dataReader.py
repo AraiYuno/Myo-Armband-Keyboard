@@ -5,13 +5,9 @@
 # Author: Kyle                                                                                        #
 # Purpose: This .py file handles the data structures that can be used in the multi-layer perceptron.  #
 #=====================================================================================================#
-
-
 import csv
 from Interval import Interval
 from collections import defaultdict
-import numpy as np
-from bisect import bisect_left
 
 # Global Variables
 
