@@ -1,6 +1,5 @@
 import numpy as np
-import random
-from dataReader import separateSets, extract_emg,get_input_x, get_gyro_y
+from dataReader import separateSets, extract_emg,get_input_x, get_input_accelero, get_input_gyro
 import tensorflow as tf
 
 def create_feature_sets_and_labels(test_size=0.3):
@@ -74,7 +73,7 @@ def create_feature_sets_and_labels(test_size=0.3):
     #         './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
     #         './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
 
-    features = get_gyro_y('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+    features = get_input_gyro('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
                            './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
                            './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
                            './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
@@ -158,7 +157,6 @@ def neural_network_model(data):
 
     # output: (hidden_layer_2 * W) + b
     output = tf.matmul(l2, output_layer['weight']) + output_layer['bias']
-
     return output
 
 
