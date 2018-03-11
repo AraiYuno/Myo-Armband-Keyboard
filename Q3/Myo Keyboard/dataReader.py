@@ -81,18 +81,41 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
         end_index = accelero_timestamp.index(timestamp_list[i])
         while start_index < end_index:
             if accelero_y[start_index] < peak_value:
-                #print( timestamp_list[i-1] +", " + timestamp_list[i])
-                #to_return.append(Interval(timestamp_list[i - 1], timestamp_list[i]))
-                to_return.append(Interval(accelero_timestamp[start_index-15], accelero_timestamp[start_index+30]))
+                to_return.append(Interval(timestamp_list[i - 1], timestamp_list[i]))
+                #to_return.append(Interval(accelero_timestamp[start_index-1], accelero_timestamp[start_index+1]))
                 break
             start_index = start_index+1
         i = i+1
     return refineSets(to_return)
 
+def centralise_intervals(intervals, average_interval_length, timestamp, data_list):
+    to_return = []
+    interval_range = int(average_interval_length/2)
+    for i in range(0, len(intervals)):
+        to_add = False
+        temp_max = 0.0
+        temp_max_index = 0
+        for y in range(0, len(timestamp)):
+            if float(intervals[i].start_time) == float(timestamp[y]):
+                to_add = True
+            if float(intervals[i].end_time) == float(timestamp[y]):
+                to_add = False
+            if to_add:
+                # we find the maximum peak in each interval as well as its index ('y')
+                if temp_max < float(data_list[y]):
+                    temp_max = float(data_list[y])
+                    temp_max_index = y
+        to_return.append(Interval(timestamp[temp_max_index-interval_range], timestamp[temp_max_index+interval_range]))
+    return to_return
+
+
+
+
+
 
 #==================================================================================
 # refineSets
-#   takes in intervals list as a parameter and make them all to 10 intervals
+#   refines the sets
 #==================================================================================
 def refineSets(intervals):
     while len(intervals) != 10:
@@ -101,7 +124,6 @@ def refineSets(intervals):
         if len(intervals) < 10:
             intervals.append(intervals[len(intervals)-2])
     return intervals
-
 
 
 
@@ -133,6 +155,9 @@ def extract_emg( intervals, emg_path, emg_num ):
             temp.append(emg_column[i])
         i = i + 1
     return to_return
+
+
+
 #==================================================================================
 # extract_gyro
 #   returns the actual data sets of gyerometer with given 10 intervals
@@ -304,7 +329,6 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     # find the average length of emg time interval ( for generic case )
     average_length = 182
 
-    #print("AVERAGE LENGTH: ", average_length)
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
     accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
     accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
@@ -321,7 +345,6 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
         right_emg_column = extract_emg(accelero_right_intervals, path_right_emg, emg_column_str)
         enter_emg_column = extract_emg(accelero_enter_intervals, path_enter_emg, emg_column_str)
 
-        print(len(forward_emg_column[0]))
         downscale(forward_emg_column)
         # append all EMG data to the emg_data_list in one BIG LIST
         # append the corresponding output expectation in an expected_output_list
@@ -376,7 +399,7 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
                  path_enter_orientation, path_enter_accelero,
-                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro ):
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro, axis):
     to_return = []
     gyro_data_list = []
     expected_output_list = []
@@ -386,6 +409,13 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
     accelero_left_timestamp = read_in_file(path_left_accelero)['timestamp']
     accelero_right_timestamp = read_in_file(path_right_accelero)['timestamp']
     accelero_enter_timestamp = read_in_file(path_enter_accelero)['timestamp']
+
+    gyro_forward = read_in_file(path_forward_gyro)[axis]
+    gyro_backward = read_in_file(path_backward_gyro)[axis]
+    gyro_left = read_in_file(path_left_gyro)[axis]
+    gyro_right = read_in_file(path_right_gyro)[axis]
+    gyro_enter = read_in_file(path_forward_gyro)[axis]
+
 
     # find the average length of emg time interval ( for generic case )
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
@@ -400,7 +430,16 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
                           calculate_average_interval_length(accelero_right_intervals, accelero_right_timestamp) +
                           calculate_average_interval_length(accelero_enter_intervals, accelero_enter_timestamp)) / 4)
 
-    print("AVERAGE LENGTH: ", average_length)
+    accelero_forward_intervals = centralise_intervals(accelero_forward_intervals, average_length, accelero_forward_timestamp, gyro_forward)
+    accelero_backward_intervals = centralise_intervals(accelero_backward_intervals, average_length, accelero_backward_timestamp, gyro_backward)
+    for i in range(0, len(accelero_right_intervals)):
+        print("Start_Time: ", accelero_backward_intervals[i].start_time, ", End_Time: ",
+              accelero_backward_intervals[i].end_time)
+    accelero_left_intervals = centralise_intervals(accelero_left_intervals, average_length, accelero_left_timestamp, gyro_left)
+    accelero_right_intervals = centralise_intervals(accelero_right_intervals, average_length, accelero_right_timestamp, gyro_right)
+    accelero_enter_intervals = centralise_intervals(accelero_enter_intervals, average_length, accelero_enter_timestamp, gyro_enter)
+
+    #print("AVERAGE LENGTH: ", average_length)
 
     forward_gyro_column = extract_gyro(accelero_forward_intervals, path_forward_gyro)
     backward_gyro_column = extract_gyro(accelero_backward_intervals, path_backward_gyro)
@@ -430,8 +469,7 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
         to_add.append(list(map(float, gyro_data_list[x])))  # convert it to list of float data
         to_add.append(expected_output_list[x])
         to_return.append(to_add)
-    for x in range(0, len(to_return)):
-        print("DD: ", len(to_return[x][0]))
+    print(to_return)
     return to_return
 
 
@@ -533,7 +571,6 @@ def get_input_multisensor(path_forward_orientation, path_forward_accelero,
                  path_enter_orientation, path_enter_accelero,
                  num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg)
     emg_intervals = downscale(emg_intervals)
-    print(len(emg_intervals),len(gyro_intervals))
     for i in range(0, len(gyro_intervals)):
         temp = []
         temp += gyro_intervals[i][0]

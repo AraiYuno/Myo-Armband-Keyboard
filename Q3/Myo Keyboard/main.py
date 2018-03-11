@@ -21,20 +21,9 @@ def create_feature_sets_and_labels(test_size=0.1):
                            './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
                            './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
                            './data/Left/gyro-1456704106.csv',
-                           './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv')
+                           './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv', 'y')
 
-    # features = get_input_multisensor('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-    #                        './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-    #                        './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-    #                        './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-    #                        './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
-    #                        './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
-    #                        './data/Left/gyro-1456704106.csv',
-    #                        './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv', 2,
-    #                        './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-    #                        './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
-    # shuffle out features and turn into np.array
-    #random.shuffle(features)
+
     features = np.array(features)
     # split a portion of the features into tests
     testing_size = int(test_size * len(features))
@@ -43,6 +32,8 @@ def create_feature_sets_and_labels(test_size=0.1):
     train_y = list(features[:, 1][:-testing_size])
     test_x = list(features[:, 0][-testing_size:])
     test_y = list(features[:, 1][-testing_size:])
+
+    print(train_x)
 
     return train_x, train_y, test_x, test_y
 
