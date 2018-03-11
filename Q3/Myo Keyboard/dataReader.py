@@ -67,6 +67,19 @@ def find_peak(y_axis):
     return sorted_list[30]
 
 
+def find_closest_timestamp_interval_list(intervals, list):
+    i = 0
+    to_return = []
+    while i < len(intervals):
+        # now we have two sorted list for both start time and end time.
+        start_time = min(map(float, list), key=lambda x: abs(x - float(intervals[i].start_time)))
+        end_time = min(map(float, list), key=lambda x: abs(x - float(intervals[i].end_time)))
+        to_return.append(Interval(str(start_time), str(end_time)))
+        i = i + 1
+    return to_return
+
+
+
 #==================================================================================
 # make_intervals
 #   returns 10 intervals that can be used to form 10 sets of data
@@ -127,35 +140,6 @@ def refineSets(intervals):
 
 
 
-#==================================================================================
-# extract_emg
-#   returns the actual EMG data sets that are separated by the intervals 2D array.
-#   For example, emg_column1[0][0] contains the first interval's first EMG data record
-#==================================================================================
-def extract_emg( intervals, emg_path, emg_num ):
-    emg = read_in_file(emg_path)
-    emg_timestamp = emg['timestamp']
-    emg_column = emg[emg_num]  # specific column within the emg .csv file
-    emg_intervals = find_closest_timestamp_interval_list(intervals, emg_timestamp)
-    to_return = []
-    temp = []
-    # now we have the emg_intervals. We actually need the "DATA" sets
-    add_data = False
-    i = j = 0
-    while i < len(emg_column) and j < len(emg_intervals):
-        if float(emg_intervals[j].start_time) == float(emg_timestamp[i]):
-            temp = []
-            add_data = True
-        if float(emg_intervals[j].end_time) == float(emg_timestamp[i]):
-            add_data = False
-            to_return.append(temp)
-            i = 0
-            j = j + 1
-        if add_data:
-            temp.append(emg_column[i])
-        i = i + 1
-    return to_return
-
 
 
 #==================================================================================
@@ -164,9 +148,9 @@ def extract_emg( intervals, emg_path, emg_num ):
 #   For example, emg_column1[0][0] contains the first interval's first gyrometer's
 #   data record
 #==================================================================================
-def extract_gyro (intervals, gyro_path):
+def extract_gyro (intervals, gyro_path, axis):
     gyro = read_in_file(gyro_path)
-    gyro_data = gyro['y']
+    gyro_data = gyro[axis]
     to_return = []
     gyro_timestamp = gyro['timestamp']
     add_data = False
@@ -399,7 +383,7 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
                  path_enter_orientation, path_enter_accelero,
-                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro, axis):
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro, axis ):
     to_return = []
     gyro_data_list = []
     expected_output_list = []
@@ -469,8 +453,7 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
         to_add.append(list(map(float, gyro_data_list[x])))  # convert it to list of float data
         to_add.append(expected_output_list[x])
         to_return.append(to_add)
-    print(to_return)
-    return to_return
+    return to_return, expected_output_list
 
 
 
@@ -489,7 +472,7 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
-                 path_enter_orientation, path_enter_accelero,):
+                 path_enter_orientation, path_enter_accelero):
     to_return = []
     emg_data_list = []
     expected_output_list = []
@@ -547,39 +530,52 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
 
 
 
-def get_input_multisensor(path_forward_orientation, path_forward_accelero,
+def get_input_multiaxis(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
                  path_enter_orientation, path_enter_accelero,
-                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro,
-                 num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg ):
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro):
 
     to_return = []
 
-    gyro_intervals = get_input_gyro(path_forward_orientation, path_forward_accelero,
+    gyro_intervals_x, output_data = get_input_gyro(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
                  path_enter_orientation, path_enter_accelero,
-                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro )
+                 path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro, path_enter_gyro,'x' )
 
-    emg_intervals,output_data_list = get_input_x(path_forward_orientation, path_forward_accelero,
+    gyro_intervals_y, output_data = get_input_gyro(path_forward_orientation, path_forward_accelero,
+                                      path_backward_orientation, path_backward_accelero,
+                                      path_left_orientation, path_left_accelero,
+                                      path_right_orientation, path_right_accelero,
+                                      path_enter_orientation, path_enter_accelero,
+                                      path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro,
+                                      path_enter_gyro, 'y')
+
+    gyro_intervals_z, output_data = get_input_gyro(path_forward_orientation, path_forward_accelero,
+                                      path_backward_orientation, path_backward_accelero,
+                                      path_left_orientation, path_left_accelero,
+                                      path_right_orientation, path_right_accelero,
+                                      path_enter_orientation, path_enter_accelero,
+                                      path_forward_gyro, path_backward_gyro, path_left_gyro, path_right_gyro,
+                                      path_enter_gyro, 'z')
+    accelero_intervals = get_input_accelero(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
-                 path_enter_orientation, path_enter_accelero,
-                 num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg)
-    emg_intervals = downscale(emg_intervals)
-    for i in range(0, len(gyro_intervals)):
+                 path_enter_orientation, path_enter_accelero)
+
+
+    for i in range(0, len(gyro_intervals_y)):
         temp = []
-        temp += gyro_intervals[i][0]
-        temp += emg_intervals[i]
+        temp +=gyro_intervals_x[i][0] +  gyro_intervals_y[i][0]+ gyro_intervals_z[i][0]+ accelero_intervals[i][0]# +emg_intervals[i]
         to_return.append(temp)
     result = []
 
     for i in range(0, len(to_return)):
-        temp = [to_return[i], output_data_list[i]]
+        temp = [to_return[i], output_data[i]]
         result.append(temp)
 
     return result
