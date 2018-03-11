@@ -81,7 +81,8 @@ def make_intervals(peak_value, timestamp_list, accelero_list):
         end_index = accelero_timestamp.index(timestamp_list[i])
         while start_index < end_index:
             if accelero_y[start_index] < peak_value:
-               #print( timestamp_list[i-1] +", " + timestamp_list[i])
+                #print( timestamp_list[i-1] +", " + timestamp_list[i])
+                #to_return.append(Interval(timestamp_list[i - 1], timestamp_list[i]))
                 to_return.append(Interval(accelero_timestamp[start_index-15], accelero_timestamp[start_index+30]))
                 break
             start_index = start_index+1
@@ -193,6 +194,7 @@ def extract_accelero(intervals, accelero_path, axis):
     return to_return
 
 
+
 #==================================================================================
 # find_closest_timestamp
 #   this function finds the closest timestamp to the given interval within the list
@@ -230,6 +232,55 @@ def downscale(data_list):
 
 
 
+#===============================================================================
+# calculate_average_interval_length
+#    this function calculates the average length of a list of intervals by
+#    counting the number of timestamps. Then, it returns the average length
+#    of the list of intervals
+#===============================================================================
+def calculate_average_interval_length(intervals, timestamp):
+    to_return = 0
+    for i in range(0, len(intervals)):
+        to_add = False
+        for y in range(0, len(timestamp)):
+            if float(intervals[i].start_time) == float(timestamp[y]):
+                to_add = True
+            if float(intervals[i].end_time) == float(timestamp[y]):
+                to_add = False
+                y -= 5
+            if to_add:
+                to_return += 1
+    return to_return/len(intervals)
+
+
+
+#============================================================================
+# set_input_entry_length
+#    takes the data_list and average_length. Then, it sets all the data entries
+#    in the data_list to the length of average_length
+#============================================================================
+def set_input_entry_length(data_list, average_length):
+    to_return = data_list[:]
+    for i in range(0, len(to_return)):
+        num_zeros_required = average_length - len(to_return[i])
+        if num_zeros_required > 0:
+            zeros_each_side = int(num_zeros_required / 2)
+            for x in range(0, zeros_each_side):
+                to_return[i].append('0')
+                to_return[i].insert(0, '0')
+        elif num_zeros_required < 0:
+            cut_each_side = abs(int(num_zeros_required / 2))
+            cut_from = cut_each_side
+            cut_to = len(to_return[i]) - cut_each_side
+            to_return[i] = to_return[i][cut_from:cut_to]
+        if len(to_return[i]) == average_length + 1:
+            to_return[i] = to_return[i][0:-2]
+        if len(to_return[i]) < average_length:
+            while len(to_return[i]) != average_length:
+                to_return[i].append('0')
+    return to_return
+
+
 #==================================================================================
 # get_input_x
 #   this function takes in the paths of all the necessary .csv files and the number
@@ -247,15 +298,8 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
                  path_right_orientation, path_right_accelero,
                  path_enter_orientation, path_enter_accelero,
                  num_emg_columns, path_forward_emg, path_backward_emg, path_left_emg, path_right_emg, path_enter_emg):
-    to_return = []
     emg_data_list = []
     expected_output_list = []
-    # timestamp list for each key
-    emg_forward_timestamp = read_in_file(path_forward_emg)['timestamp']
-    emg_backward_timestamp = read_in_file(path_backward_emg)['timestamp']
-    emg_left_timestamp = read_in_file(path_left_emg)['timestamp']
-    emg_right_timestamp = read_in_file(path_right_emg)['timestamp']
-    emg_enter_timestamp = read_in_file(path_enter_emg)['timestamp']
 
     # find the average length of emg time interval ( for generic case )
     average_length = 182
@@ -315,6 +359,7 @@ def get_input_x( path_forward_orientation, path_forward_accelero,
     return emg_data_list, expected_output_list
 
 
+
 #==================================================================================
 # get_input_gyro
 #   this function takes in the paths of all the necessary .csv files and the number
@@ -336,14 +381,26 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
     gyro_data_list = []
     expected_output_list = []
 
+    accelero_forward_timestamp = read_in_file(path_forward_accelero)['timestamp']
+    accelero_backward_timestamp = read_in_file(path_backward_accelero)['timestamp']
+    accelero_left_timestamp = read_in_file(path_left_accelero)['timestamp']
+    accelero_right_timestamp = read_in_file(path_right_accelero)['timestamp']
+    accelero_enter_timestamp = read_in_file(path_enter_accelero)['timestamp']
+
     # find the average length of emg time interval ( for generic case )
-    average_length = 45
-    print("AVERAGE LENGTH: ", average_length)
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
     accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
     accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
     accelero_right_intervals = separateSets(path_right_orientation, path_right_accelero)
     accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
+
+    average_length = int((calculate_average_interval_length(accelero_forward_intervals, accelero_forward_timestamp) +
+                          calculate_average_interval_length(accelero_backward_intervals, accelero_backward_timestamp) +
+                          calculate_average_interval_length(accelero_left_intervals, accelero_left_timestamp) +
+                          calculate_average_interval_length(accelero_right_intervals, accelero_right_timestamp) +
+                          calculate_average_interval_length(accelero_enter_intervals, accelero_enter_timestamp)) / 4)
+
+    print("AVERAGE LENGTH: ", average_length)
 
     forward_gyro_column = extract_gyro(accelero_forward_intervals, path_forward_gyro)
     backward_gyro_column = extract_gyro(accelero_backward_intervals, path_backward_gyro)
@@ -365,33 +422,16 @@ def get_input_gyro(path_forward_orientation, path_forward_accelero,
         gyro_data_list.append(enter_gyro_column[i])
         expected_output_list.append([0, 0, 0, 0, 1])
 
-    # now we compare every gyro data record with the average_length.
-    # CASE1: if x < average_length, pad with zeros at each side.
-    # CASE2: if x > average_length, then cut off the edges.
-    i = 0
-    while i < len(gyro_data_list):
-        num_zeros_required = average_length - len(gyro_data_list[i])
-        if num_zeros_required > 0:
-            zeros_each_side = int(num_zeros_required / 2)
-            for x in range(0, zeros_each_side):
-                gyro_data_list[i].append('0')
-                gyro_data_list[i].insert(0, '0')
-        elif num_zeros_required < 0:
-            cut_each_side = abs(int(num_zeros_required / 2))
-            cut_from = cut_each_side
-            cut_to = len(gyro_data_list[i]) - cut_each_side
-            gyro_data_list[i] = gyro_data_list[i][cut_from:cut_to]
-        i = i + 1
-
+    gyro_data_list = set_input_entry_length(gyro_data_list, average_length)
     # Here, we finally create an ideal data structure
-
     # [ [[1,2,3], [1, 0, 0, 0, 0]], [[3,2,1], [0, 1, 0, 0, 0]], ... ]
-    #print("hello",gyro_data_list)
     for x in range(0, len(gyro_data_list)):
         to_add = []
         to_add.append(list(map(float, gyro_data_list[x])))  # convert it to list of float data
         to_add.append(expected_output_list[x])
         to_return.append(to_add)
+    for x in range(0, len(to_return)):
+        print("DD: ", len(to_return[x][0]))
     return to_return
 
 
@@ -425,14 +465,12 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
     accelero_right_intervals = separateSets(path_right_orientation, path_right_accelero)
     accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
 
-
     forward_accelero_axis = extract_accelero(accelero_forward_intervals, path_forward_accelero, 'y')
     backward_accelero_axis = extract_accelero(accelero_backward_intervals, path_backward_accelero, 'y')
     left_accelero_axis = extract_accelero(accelero_left_intervals, path_left_accelero, 'y')
     right_accelero_axis = extract_accelero(accelero_right_intervals, path_right_accelero, 'y')
     enter_accelero_axis = extract_accelero(accelero_enter_intervals, path_enter_accelero, 'y')
 
-    #print(forward_accelero_axis)
     for x in range(0, len(forward_accelero_axis)):
         emg_data_list.append(forward_accelero_axis[x])
         expected_output_list.append([1, 0, 0, 0, 0])
@@ -466,25 +504,6 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
         to_add = []
         to_add.append(list(map(float, emg_data_list[y])))  # convert it to list of float data
         to_add.append(expected_output_list[y])
-        to_return.append(to_add)
-    return to_return
-
-
-
-#===============================================================================
-# downscale
-#    this takes in list of accelero_intervals as a parameter and downscales it
-#
-#    Currently, this function should only downscale EMG data by skipping alternating
-#    values
-#===============================================================================
-def downscale(data_list):
-    to_return = []
-    for i in range(0, len(data_list)): # should be really 10
-        to_add = []
-        for j in range(0, len(data_list[i])):
-            if j % 3 == 0:
-                to_add.append(data_list[i][j])
         to_return.append(to_add)
     return to_return
 
@@ -528,18 +547,3 @@ def get_input_multisensor(path_forward_orientation, path_forward_accelero,
 
     return result
 
-
-
-# get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-#              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-#              './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-#              './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-#              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 4,
-#              './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-#              './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
-
-# get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-#              './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-#              './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-#              './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-#              './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')

@@ -4,66 +4,7 @@ import tensorflow as tf
 
 def create_feature_sets_and_labels(test_size=0.1):
 
-    # forward_intervals = separateSets('./data/Forward/orientation-1456703940.csv',
-    #                                  './data/Forward/accelerometer-1456703940.csv')
-    # backward_intervals = separateSets('./data/Backward/orientation-1456704054.csv',
-    #                                   './data/Backward/accelerometer-1456704054.csv')
-    # right_intervals = separateSets('./data/Right/orientation-1456704146.csv',
-    #                                './data/Right/accelerometer-1456704146.csv')
-    # left_intervals = separateSets('./data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv')
-    # enter_intervals = separateSets('./data/Enter/orientation-1456704184.csv',
-    #                                './data/Enter/accelerometer-1456704184.csv')
-    #
-    # forward_emg_column1 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg1')
-    # forward_emg_column2 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg2')
-    # forward_emg_column3 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg3')
-    # forward_emg_column4 = extract_emg(forward_intervals, './data/Forward/emg-1456703940.csv', 'emg4')
-    #
-    # backward_emg_column1 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg1')
-    # backward_emg_column2 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg2')
-    # backward_emg_column3 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg3')
-    # backward_emg_column4 = extract_emg(backward_intervals, './data/Backward/emg-1456704054.csv', 'emg4')
-    #
-    # left_emg_column1 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg1')
-    # left_emg_column2 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg2')
-    # left_emg_column3 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg3')
-    # left_emg_column4 = extract_emg(left_intervals, './data/Left/emg-1456704106.csv', 'emg4')
-    #
-    # right_emg_column1 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg1')
-    # right_emg_column2 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg2')
-    # right_emg_column3 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg3')
-    # right_emg_column4 = extract_emg(right_intervals, './data/Right/emg-1456704146.csv', 'emg4')
-    #
-    # enter_emg_column1 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg1')
-    # enter_emg_column2 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg2')
-    # enter_emg_column3 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg3')
-    # enter_emg_column4 = extract_emg(enter_intervals, './data/Enter/emg-1456704184.csv', 'emg4')
-    #
-    #
-    # features = []
-    # features.append([forward_emg_column1, [1, 0, 0, 0, 0]])
-    # features.append([backward_emg_column1, [0, 1, 0, 0, 0]])
-    # features.append([left_emg_column1, [0, 0, 1, 0, 0]])
-    # features.append([right_emg_column1,[0, 0, 0, 1, 0]])
-    # features.append([enter_emg_column1,[0, 0, 0, 0, 1]])
-    #
-    # # features.append([forward_emg_column2, [1, 0, 0, 0, 0]])
-    # # features.append([backward_emg_column2, [0, 1, 0, 0, 0]])
-    # # features.append([left_emg_column2, [0, 0, 1, 0, 0]])
-    # # features.append([right_emg_column2, [0, 0, 0, 1, 0]])
-    # # features.append([enter_emg_column2, [0, 0, 0, 0, 1]])
-    # #
-    # # features.append([forward_emg_column3, [1, 0, 0, 0, 0]])
-    # # features.append([backward_emg_column3, [0, 1, 0, 0, 0]])
-    # # features.append([left_emg_column3, [0, 0, 1, 0, 0]])
-    # # features.append([right_emg_column3, [0, 0, 0, 1, 0]])
-    # # features.append([enter_emg_column3, [0, 0, 0, 0, 1]])
-    # #
-    # # features.append([forward_emg_column4, [1, 0, 0, 0, 0]])
-    # # features.append([backward_emg_column4, [0, 1, 0, 0, 0]])
-    # # features.append([left_emg_column4, [0, 0, 1, 0, 0]])
-    # # features.append([right_emg_column4, [0, 0, 0, 1, 0]])
-    # # features.append([enter_emg_column4, [0, 0, 0, 0, 1]])
+
 
     # features = get_input_x('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
     #         './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
@@ -82,16 +23,16 @@ def create_feature_sets_and_labels(test_size=0.1):
                            './data/Left/gyro-1456704106.csv',
                            './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv')
 
-    features = get_input_multisensor('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-                           './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-                           './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-                           './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-                           './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
-                           './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
-                           './data/Left/gyro-1456704106.csv',
-                           './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv', 2,
-                           './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
-                           './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
+    # features = get_input_multisensor('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+    #                        './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+    #                        './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+    #                        './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+    #                        './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
+    #                        './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
+    #                        './data/Left/gyro-1456704106.csv',
+    #                        './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv', 2,
+    #                        './data/Forward/emg-1456703940.csv', './data/Backward/emg-1456704054.csv', './data/Left/emg-1456704106.csv',
+    #                        './data/Right/emg-1456704146.csv', './data/Enter/emg-1456704184.csv')
     # shuffle out features and turn into np.array
     #random.shuffle(features)
     features = np.array(features)
@@ -110,10 +51,10 @@ train_x, train_y, test_x, test_y = create_feature_sets_and_labels()
 
 
 # hidden layers and their nodes
-n_nodes_hl1 = 25
-n_nodes_hl2 = 25
-n_nodes_hl3 = 25
-n_nodes_hl4 = 25
+n_nodes_hl1 = 75
+n_nodes_hl2 = 75
+n_nodes_hl3 = 75
+n_nodes_hl4 = 75
 
 # classes in our output
 n_classes = 5
