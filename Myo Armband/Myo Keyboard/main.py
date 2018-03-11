@@ -1,32 +1,43 @@
 import random
 
 import numpy as np
-from dataReader import separateSets,  get_input_accelero, get_input_gyro, get_input_multiaxis
+from dataReader import separateSets,  get_input_accelero, get_input_gyro, get_input_multiaxis_accelerometer, get_input_multiaxis_gyrometer
 import tensorflow as tf
 
 def create_feature_sets_and_labels(test_size=0.1):
 
 
-    features, output_data = get_input_gyro('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-                           './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-                           './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-                           './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-                           './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
-                           './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
-                           './data/Left/gyro-1456704106.csv',
-                           './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv','y')
-
-
-    # features = get_input_multiaxis('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+    # features, output_data = get_input_gyro('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
     #                        './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
     #                        './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
     #                        './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
     #                        './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
     #                        './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
     #                        './data/Left/gyro-1456704106.csv',
-    #                        './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv')
-    # shuffle out features and turn into np.array
-    #random.shuffle(features)
+    #                        './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv','y')
+
+    # features = get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+    #                               './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+    #                               './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+    #                               './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+    #                               './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 'x')
+
+    features = get_input_multiaxis_gyrometer('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+                           './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+                           './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+                           './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+                           './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
+                           './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
+                           './data/Left/gyro-1456704106.csv',
+                           './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv')
+
+
+    # features = get_input_multiaxis_accelerometer('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
+    #                        './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
+    #                        './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
+    #                        './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
+    #                        './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
+
     features = np.array(features)
 
     # split a portion of the features into tests
@@ -42,10 +53,6 @@ def create_feature_sets_and_labels(test_size=0.1):
 
 
 train_x, train_y, test_x, test_y = create_feature_sets_and_labels()
-
-print(train_x)
-
-
 
 
 # hidden layers and their nodes
@@ -105,7 +112,7 @@ def neural_network_model(data):
     l4 = tf.add(tf.matmul(l3, hidden_4_layer['weight']), hidden_4_layer['bias'])
     l4 = tf.sigmoid(l4)
 
-    #output: (hidden_layer_2 * W) + b
+    #output: (hidden_layer_4 * W) + b
     output = tf.matmul(l4, output_layer['weight']) + output_layer['bias']
     return output
 
@@ -120,7 +127,7 @@ def train_neural_network(x):
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y))
 
     # optimize for cost using GradientDescent
-    optimizer = tf.train.AdamOptimizer(learning_rate= 0.001).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
 
     # Tensorflow session
     with tf.Session() as sess:
@@ -161,10 +168,9 @@ def train_neural_network(x):
             print('prediction expected:',test_y[i])
             output = prediction.eval(feed_dict={x: [test_x[i]]})
             # normalize the prediction values
-            print(np.around(tf.nn.softmax(output).eval(), 3))
+            print((tf.nn.softmax(output).eval()))
         print('Accuracy:', accuracy.eval({x: test_x, y: test_y}))
     return output_weight, output_bias
-
 
 
 output_weight, output_bias = train_neural_network(x)

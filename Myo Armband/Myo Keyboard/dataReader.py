@@ -469,19 +469,40 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
-                 path_enter_orientation, path_enter_accelero):
+                 path_enter_orientation, path_enter_accelero, axis):
     to_return = []
     emg_data_list = []
     expected_output_list = []
 
-    average_length = 45
+    accelero_forward_timestamp = read_in_file(path_forward_accelero)['timestamp']
+    accelero_backward_timestamp = read_in_file(path_backward_accelero)['timestamp']
+    accelero_left_timestamp = read_in_file(path_left_accelero)['timestamp']
+    accelero_right_timestamp = read_in_file(path_right_accelero)['timestamp']
+    accelero_enter_timestamp = read_in_file(path_enter_accelero)['timestamp']
 
-    print("AVERAGE LENGTH: ", average_length)
+    accelero_forward = read_in_file(path_forward_accelero)[axis]
+    accelero_backward = read_in_file(path_backward_accelero)[axis]
+    accelero_left = read_in_file(path_left_accelero)[axis]
+    accelero_right = read_in_file(path_right_accelero)[axis]
+    accelero_enter = read_in_file(path_enter_accelero)[axis]
+
     accelero_forward_intervals = separateSets(path_forward_orientation, path_forward_accelero)
     accelero_backward_intervals = separateSets(path_backward_orientation, path_backward_accelero)
     accelero_left_intervals = separateSets(path_left_orientation, path_left_accelero)
     accelero_right_intervals = separateSets(path_right_orientation, path_right_accelero)
     accelero_enter_intervals = separateSets(path_enter_orientation, path_enter_accelero)
+
+    average_length = int((calculate_average_interval_length(accelero_forward_intervals, accelero_forward_timestamp) +
+                          calculate_average_interval_length(accelero_backward_intervals, accelero_backward_timestamp) +
+                          calculate_average_interval_length(accelero_left_intervals, accelero_left_timestamp) +
+                          calculate_average_interval_length(accelero_right_intervals, accelero_right_timestamp) +
+                          calculate_average_interval_length(accelero_enter_intervals, accelero_enter_timestamp)) / 4)
+
+    accelero_forward_intervals = centralise_intervals(accelero_forward_intervals, average_length, accelero_forward_timestamp, accelero_forward)
+    accelero_backward_intervals = centralise_intervals(accelero_backward_intervals, average_length, accelero_backward_timestamp, accelero_backward)
+    accelero_left_intervals = centralise_intervals(accelero_left_intervals, average_length, accelero_left_timestamp, accelero_left)
+    accelero_right_intervals = centralise_intervals(accelero_right_intervals, average_length, accelero_right_timestamp, accelero_right)
+    accelero_enter_intervals = centralise_intervals(accelero_enter_intervals, average_length, accelero_enter_timestamp, accelero_enter)
 
     forward_accelero_axis = extract_accelero(accelero_forward_intervals, path_forward_accelero, 'y')
     backward_accelero_axis = extract_accelero(accelero_backward_intervals, path_backward_accelero, 'y')
@@ -523,11 +544,53 @@ def get_input_accelero(path_forward_orientation, path_forward_accelero,
         to_add.append(list(map(float, emg_data_list[y])))  # convert it to list of float data
         to_add.append(expected_output_list[y])
         to_return.append(to_add)
-    return to_return
+    return to_return, expected_output_list
 
 
 
-def get_input_multiaxis(path_forward_orientation, path_forward_accelero,
+def get_input_multiaxis_accelerometer(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero):
+
+    to_return = []
+
+    accelero_intervals_x, output_data = get_input_accelero(path_forward_orientation, path_forward_accelero,
+                 path_backward_orientation, path_backward_accelero,
+                 path_left_orientation, path_left_accelero,
+                 path_right_orientation, path_right_accelero,
+                 path_enter_orientation, path_enter_accelero,
+                 'x' )
+
+    accelero_intervals_y, output_data = get_input_accelero(path_forward_orientation, path_forward_accelero,
+                                      path_backward_orientation, path_backward_accelero,
+                                      path_left_orientation, path_left_accelero,
+                                      path_right_orientation, path_right_accelero,
+                                      path_enter_orientation, path_enter_accelero,
+                                       'y')
+
+    accelero_intervals_z, output_data = get_input_accelero(path_forward_orientation, path_forward_accelero,
+                                      path_backward_orientation, path_backward_accelero,
+                                      path_left_orientation, path_left_accelero,
+                                      path_right_orientation, path_right_accelero,
+                                      path_enter_orientation, path_enter_accelero,
+                                       'z')
+
+
+    for i in range(0, len(accelero_intervals_y)):
+        temp = []
+        temp += accelero_intervals_x[i][0] + accelero_intervals_y[i][0]+ accelero_intervals_z[i][0]
+        to_return.append(temp)
+    result = []
+
+    for i in range(0, len(to_return)):
+        temp = [to_return[i], output_data[i]]
+        result.append(temp)
+    return result
+
+
+def get_input_multiaxis_gyrometer(path_forward_orientation, path_forward_accelero,
                  path_backward_orientation, path_backward_accelero,
                  path_left_orientation, path_left_accelero,
                  path_right_orientation, path_right_accelero,
@@ -570,4 +633,5 @@ def get_input_multiaxis(path_forward_orientation, path_forward_accelero,
         temp = [to_return[i], output_data[i]]
         result.append(temp)
     return result
+
 
