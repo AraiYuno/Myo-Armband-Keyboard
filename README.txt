@@ -3,7 +3,6 @@
 -Instructions:
 -	1: Run assignment2/Linear Regression/linear_regression.py
 -	2: Run assignment2/Overfitting- Polynomial Regression/overfitting_polynomial.py
--	
 -	3: Run assignment2/Myo Armband/Myo Keyboard/main.py
 -
 -

@@ -13,8 +13,8 @@ test_X = []
 test_Y = []
 
 # Parameters
-learning_rate = 0.01
-training_epochs = 2000
+learning_rate = 0.5
+training_epochs = 4000
 display_step = 50
 
 MW = 2.0
@@ -40,7 +40,7 @@ test_X = np.array(test_X, dtype='f')
 test_Y = np.array(test_Y, dtype='f')
 
 
-n_samples = 100
+n_samples = train_X.shape[0]
 
 # tf Graph Input
 X = tf.placeholder("float32")
@@ -52,11 +52,25 @@ Y = tf.placeholder("float32")
 
 for order in range(2, 7):
 
-    b = tf.Variable(rng.randn(), name="bias")
+    b = tf.Variable(rng.randn(), name='bias')
+    W1 = tf.Variable(rng.randn(), name='weight_1')
+    W2 = tf.Variable(rng.randn(), name='weight_2')
+    W3 = tf.Variable(rng.randn(), name='weight_3')
+    W4 = tf.Variable(rng.randn(), name='weight_4')
+    W5 = tf.Variable(rng.randn(), name='weight_5')
 
     activation = tf.add(b, 0.0)
     for pow_i in range(1, order):
-        W = tf.Variable(tf.random_normal([1]), name='weight_%d' % pow_i)
+        if pow_i == 1:
+            W = W1
+        if pow_i == 2:
+            W = W2
+        if pow_i == 3:
+            W = W3
+        if pow_i == 4:
+            W = W4
+        if pow_i == 5:
+            W = W5
         activation = tf.add(tf.multiply(tf.pow(X, pow_i), W), activation)
 
     # Minimize the squared errors
@@ -76,14 +90,28 @@ for order in range(2, 7):
             for (x, y) in zip(train_X, train_Y):
                 sess.run(optimizer, feed_dict={X: x, Y: y})
 
-        # Display logs per epoch step
-        if epoch % 1999 == 0:
-            print("Epoch:", '%04d' % (epoch + 1), "cost=",
-                  "{:.9f}".format(sess.run(cost, feed_dict={X: train_X, Y: train_Y})), \
-                  "W=", sess.run(W), "b=", sess.run(b))
         print("\nOptimization Finished!")
         training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
-        print("Training cost=", training_cost, "W=", sess.run(W), "b=", sess.run(b), '\n')
+
+        if order == 2:
+            print("Training cost=", training_cost, "W1=", sess.run(W1), "b=", sess.run(b))
+            y = sess.run(W1) * test_X + sess.run(b)
+
+        if order == 3:
+            print("Training cost=", training_cost, "W1=", sess.run(W1), "W2=", sess.run(W2), "b=", sess.run(b))
+            y = sess.run(W2) * np.power(test_X, 2) + sess.run(W1) * test_X + sess.run(b)
+
+        if order == 4:
+            print("Training cost=", training_cost, "W1=", sess.run(W1), "W2=", sess.run(W2), "W3=", sess.run(W3), "b=", sess.run(b))
+            y = sess.run(W3) * np.power(test_X, 3) + sess.run(W2) * np.power(test_X, 2) + sess.run(W1) * test_X + sess.run(b)
+
+        if order == 5:
+            print("Training cost=", training_cost, "W1=", sess.run(W1), "W2=", sess.run(W2), "W3=", sess.run(W3), "W4=", sess.run(W4), "b=", sess.run(b))
+            y = sess.run(W4) * np.power(test_X, 4) + sess.run(W3) * np.power(test_X, 3) + sess.run(W2) * np.power(test_X, 2) + sess.run(W1) * test_X + sess.run(b)
+
+        if order == 6:
+            print("Training cost=", training_cost, "W1=", sess.run(W1), "W2=", sess.run(W2), "W3=", sess.run(W3), "W4=", sess.run(W4), "W5=", sess.run(W5), "b=", sess.run(b))
+            y = sess.run(W5) * np.power(test_X, 5) + sess.run(W4) * np.power(test_X, 4) + sess.run(W3) * np.power(test_X, 3) + sess.run(W2) * np.power(test_X, 2) + sess.run(W1) * test_X + sess.run(b)
 
         print("Testing... (L2 loss Comparison)")
         print("Testing... (Mean square loss Comparison)")
@@ -93,20 +121,12 @@ for order in range(2, 7):
         print("Testing cost=", testing_cost)
         print("Absolute mean square loss difference:", abs(
             training_cost - testing_cost))
-        fig = plt.figure(figsize=(30, 30), dpi=100)
+        fig = plt.figure(figsize=(10, 10), dpi=100)
         ax = fig.add_subplot(111)
 
         ax.plot(test_X, test_Y, 'bo', label='Testing data')
+        ax.plot(train_X, train_Y, 'ro', label='Training data')
 
-        if order == 2:
-            ax.plot(test_X, sess.run(W) * test_X + sess.run(b), label='Fitted line')
-        if order == 3:
-            ax.plot(test_X, sess.run(W) * test_X * test_X + sess.run(W) * test_X + sess.run(b), label='Fitted line')
-        if order == 4:
-            ax.plot(test_X, sess.run(W) * test_X * test_X * test_X + sess.run(W) * test_X * test_X + sess.run(W) * test_X + sess.run(b), label='Fitted line')
-        if order == 5:
-            ax.plot(test_X, sess.run(W) * test_X * test_X * test_X * test_X + sess.run(W) * test_X * test_X * test_X + sess.run(W) * test_X * test_X + sess.run(W) * test_X + sess.run(b), label='Fitted line')
-        if order == 6:
-            ax.plot(test_X, sess.run(W) * test_X * test_X * test_X * test_X * test_X + sess.run(W) * test_X * test_X * test_X * test_X + sess.run(W) * test_X * test_X * test_X + sess.run(W) * test_X * test_X + sess.run(W) * test_X + sess.run(b), label='Fitted line')
-        fig.savefig('order{:05d}.png'.format(pow_i), bbox_inches='tight', dpi=100)
+        ax.plot(test_X, y, label='Fitted line')
+        fig.savefig('PolynomialOrder{:05d}.png'.format(pow_i), bbox_inches='tight', dpi=100)
         plt.close(fig)

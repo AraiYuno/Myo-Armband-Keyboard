@@ -1,13 +1,59 @@
 Question 3
 a)
-	Straight line:		Error = 0.47631744
-	Parabola:		Error = 0.4351509
-	Cubic: 			Error = 0.3917215
-	4th order: 		Error = 0.425157
-	5th order: 		Error = 0.19967277
+    learning_rate = 0.5
+    training_epochs = 4000
+
+    Order  1
+
+        Optimization Finished!
+        Training cost= 0.1897402 W1= -0.22340831 b= 0.893306
+        Testing... (L2 loss Comparison)
+        Testing... (Mean square loss Comparison)
+        Testing cost= 0.4690774
+        Absolute mean square loss difference: 0.27933723
+
+
+    Order  2
+
+        Optimization Finished!
+        Training cost= 0.05690388 W1= -7.169283 W2= 6.791186 b= 2.0772498
+        Testing... (L2 loss Comparison)
+        Testing... (Mean square loss Comparison)
+        Testing cost= 0.07925124
+        Absolute mean square loss difference: 0.022347357
+
+
+    Order  3
+
+        Optimization Finished!
+        Training cost= 0.05318564 W1= -5.02468 W2= 1.3735889 W3= 3.6141403 b= 1.9062489
+        Testing... (L2 loss Comparison)
+        Testing... (Mean square loss Comparison)
+        Testing cost= 0.066115335
+        Absolute mean square loss difference: 0.012929693
+
+
+    Order  4
+
+        Optimization Finished!
+        Training cost= 0.05454749 W1= -3.4178379 W2= -1.0972961 W3= 2.7923446 W4= 1.9962078 b= 1.7316713
+        Testing... (L2 loss Comparison)
+        Testing... (Mean square loss Comparison)
+        Testing cost= 0.0798177
+        Absolute mean square loss difference: 0.025270209
+
+
+    Order  5
+
+        Optimization Finished!
+        Training cost= 0.053712863 W1= -4.3001537 W2= 0.92817086 W3= 1.9282295 W4= 1.1474717 W5= 0.44692305 b= 1.8092209
+        Testing... (L2 loss Comparison)
+        Testing... (Mean square loss Comparison)
+        Testing cost= 0.07004363
+        Absolute mean square loss difference: 0.016330767
 
 b)
-	The polynomial with degree 5 has the smallest error on the test set.
+	The polynomial with degree 3 has the smallest error on the test set. The results may vary with the learning rate and training epochs.
 
 c)
-	As the order of polynomial increases, the fitting line is passing through almost all the data and causing overfitting.
+	As the order of polynomial increases, the fitting line is passing thorough almose all the data and causing overfitting.
