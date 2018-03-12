@@ -1,0 +1,13 @@
+Question 3
+a)
+	Straight line:		Error = 0.47631744
+	Parabola:		Error = 0.4351509
+	Cubic: 			Error = 0.3917215
+	4th order: 		Error = 0.425157
+	5th order: 		Error = 0.19967277
+
+b)
+	The polynomial with degree 5 has the smallest error on the test set.
+
+c)
+	As the order of polynomial increases, the fitting line is passing through almost all the data and causing overfitting.
