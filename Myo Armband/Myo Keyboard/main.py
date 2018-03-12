@@ -1,42 +1,73 @@
-import random
-
 import numpy as np
 from dataReader import separateSets,  get_input_accelero, get_input_gyro, get_input_multiaxis_accelerometer, get_input_multiaxis_gyrometer
 import tensorflow as tf
 
-def create_feature_sets_and_labels(test_size=0.1):
+
+def create_input_output_values(test_size=0.1):
+    number = input( "Type 1 for single axis gyro data\nType 2 for single axis accelero data\nType 3 for multi axis gyro data\nType 4 for multi axis accelero data\n Type 5 to exit\n\nEnter your number:  ")
+    if (number == '1'):
+        print("Processing single axis gyro data\n\n")
+        features, output_data = get_input_gyro('./data/Forward/orientation-1456703940.csv',
+                                               './data/Forward/accelerometer-1456703940.csv',
+                                               './data/Backward/orientation-1456704054.csv',
+                                               './data/Backward/accelerometer-1456704054.csv',
+                                               './data/Left/orientation-1456704106.csv',
+                                               './data/Left/accelerometer-1456704106.csv',
+                                               './data/Right/orientation-1456704146.csv',
+                                               './data/Right/accelerometer-1456704146.csv',
+                                               './data/Enter/orientation-1456704184.csv',
+                                               './data/Enter/accelerometer-1456704184.csv',
+                                               './data/Forward/gyro-1456703940.csv',
+                                               './data/Backward/gyro-1456704054.csv',
+                                               './data/Left/gyro-1456704106.csv',
+                                               './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv',
+                                               'y')
+    elif (number == '2'):
+        print("Processing single axis accelero data\n\n")
+        features, output_data = get_input_accelero('./data/Forward/orientation-1456703940.csv',
+                                                   './data/Forward/accelerometer-1456703940.csv',
+                                                   './data/Backward/orientation-1456704054.csv',
+                                                   './data/Backward/accelerometer-1456704054.csv',
+                                                   './data/Left/orientation-1456704106.csv',
+                                                   './data/Left/accelerometer-1456704106.csv',
+                                                   './data/Right/orientation-1456704146.csv',
+                                                   './data/Right/accelerometer-1456704146.csv',
+                                                   './data/Enter/orientation-1456704184.csv',
+                                                   './data/Enter/accelerometer-1456704184.csv', 'x')
+
+    elif (number == '3'):
+        print("Processing multi axis gyro data\n\n")
+        features = get_input_multiaxis_gyrometer('./data/Forward/orientation-1456703940.csv',
+                                                 './data/Forward/accelerometer-1456703940.csv',
+                                                 './data/Backward/orientation-1456704054.csv',
+                                                 './data/Backward/accelerometer-1456704054.csv',
+                                                 './data/Left/orientation-1456704106.csv',
+                                                 './data/Left/accelerometer-1456704106.csv',
+                                                 './data/Right/orientation-1456704146.csv',
+                                                 './data/Right/accelerometer-1456704146.csv',
+                                                 './data/Enter/orientation-1456704184.csv',
+                                                 './data/Enter/accelerometer-1456704184.csv',
+                                                 './data/Forward/gyro-1456703940.csv',
+                                                 './data/Backward/gyro-1456704054.csv',
+                                                 './data/Left/gyro-1456704106.csv',
+                                                 './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv')
+
+    elif (number == '4'):
+        print("Processing multi axis accelero data\n\n")
+        features = get_input_multiaxis_accelerometer('./data/Forward/orientation-1456703940.csv',
+                                                     './data/Forward/accelerometer-1456703940.csv',
+                                                     './data/Backward/orientation-1456704054.csv',
+                                                     './data/Backward/accelerometer-1456704054.csv',
+                                                     './data/Left/orientation-1456704106.csv',
+                                                     './data/Left/accelerometer-1456704106.csv',
+                                                     './data/Right/orientation-1456704146.csv',
+                                                     './data/Right/accelerometer-1456704146.csv',
+                                                     './data/Enter/orientation-1456704184.csv',
+                                                     './data/Enter/accelerometer-1456704184.csv')
 
 
-    # features, output_data = get_input_gyro('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-    #                        './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-    #                        './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-    #                        './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-    #                        './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
-    #                        './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
-    #                        './data/Left/gyro-1456704106.csv',
-    #                        './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv','y')
-
-    # features = get_input_accelero('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-    #                               './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-    #                               './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-    #                               './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-    #                               './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv', 'x')
-
-    features = get_input_multiaxis_gyrometer('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-                           './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-                           './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-                           './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-                           './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv',
-                           './data/Forward/gyro-1456703940.csv', './data/Backward/gyro-1456704054.csv',
-                           './data/Left/gyro-1456704106.csv',
-                           './data/Right/gyro-1456704146.csv', './data/Enter/gyro-1456704184.csv')
-
-
-    # features = get_input_multiaxis_accelerometer('./data/Forward/orientation-1456703940.csv', './data/Forward/accelerometer-1456703940.csv',
-    #                        './data/Backward/orientation-1456704054.csv', './data/Backward/accelerometer-1456704054.csv',
-    #                        './data/Left/orientation-1456704106.csv', './data/Left/accelerometer-1456704106.csv',
-    #                        './data/Right/orientation-1456704146.csv', './data/Right/accelerometer-1456704146.csv',
-    #                        './data/Enter/orientation-1456704184.csv', './data/Enter/accelerometer-1456704184.csv')
+    else:
+        print("Wrong input!!!!")
 
     features = np.array(features)
 
@@ -52,7 +83,7 @@ def create_feature_sets_and_labels(test_size=0.1):
     return train_x, train_y, test_x, test_y
 
 
-train_x, train_y, test_x, test_y = create_feature_sets_and_labels()
+train_x, train_y, test_x, test_y = create_input_output_values()
 
 
 # hidden layers and their nodes
@@ -63,9 +94,10 @@ n_nodes_hl4 = 75
 
 # classes in our output
 n_classes = 5
+
 # iterations and batch-size to build out model
 hm_epochs = 1000
-batch_size = 10
+batch_size = 4
 
 
 x = tf.placeholder('float')
@@ -120,26 +152,23 @@ def neural_network_model(data):
 
 # training our model
 def train_neural_network(x):
-    # use the model definition
+    # model structure
     prediction = neural_network_model(x)
 
     # formula for cost (error)
     cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y))
 
-    # optimize for cost using GradientDescent
+    # optimize for cost using AdamOptimizer
     optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
 
     # Tensorflow session
     with tf.Session() as sess:
-        summary_writer = tf.summary.FileWriter('log_ANN_graph', sess.graph)
         # initialize our variables
         sess.run(tf.global_variables_initializer())
 
-        # loop through specified number of iterations
         for epoch in range(hm_epochs):
             epoch_loss = 0
             i = 0
-            # handle batch sized chunks of training data
             while i < len(train_x):
                 start = i
                 end = i + batch_size
@@ -154,23 +183,42 @@ def train_neural_network(x):
             # print cost updates along the way
             if (epoch % (hm_epochs / 5)) == 0:
                 print('Epoch', epoch, 'completed out of', hm_epochs, 'cost:', last_cost)
-
         # print accuracy of our model
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:', accuracy.eval({x: test_x, y: test_y}))
 
         output_weight = sess.run(output_layer['weight'])
         output_bias = sess.run(output_layer['bias'])
 
         # print predictions using our model
         for i, t in enumerate(test_x):
-            print('prediction expected:',test_y[i])
+            print('Prediction expected:',test_y[i],key_name(test_y[i]))
             output = prediction.eval(feed_dict={x: [test_x[i]]})
-            # normalize the prediction values
+            # softmax the prediction values
+            softmax = tf.nn.softmax(output).eval()
             print((tf.nn.softmax(output).eval()))
-        print('Accuracy:', accuracy.eval({x: test_x, y: test_y}))
+        print('Accuracy:', (accuracy.eval({x: test_x, y: test_y}))*100,"%")
     return output_weight, output_bias
+
+#==================================================================================
+# key_name
+# return the name of the key that is being predicted.
+#==================================================================================
+def key_name(input):
+    to_return = "null"
+
+    if input[0] == 1:
+        to_return = " - Forward key"
+    if input[1] == 1:
+        to_return = " - Backward key"
+    if input[2] == 1:
+        to_return = " - Left key"
+    if input[3] == 1:
+        to_return = " - Right key"
+    if input[4] == 1:
+        to_return = " - Enter key"
+
+    return to_return
 
 
 output_weight, output_bias = train_neural_network(x)
